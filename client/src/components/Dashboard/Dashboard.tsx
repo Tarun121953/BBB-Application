@@ -20,7 +20,8 @@ import {
   CircularProgress,
   ThemeProvider,
   CssBaseline,
-  createTheme
+  createTheme,
+  Button,
 } from '@mui/material';
 import DashboardHeader from './DashboardHeader';
 import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined';
@@ -29,6 +30,7 @@ import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import InsightsIcon from '@mui/icons-material/Insights';
@@ -150,6 +152,13 @@ const Dashboard: React.FC = () => {
   const [regionwiseBcklogs, setRegionwiseBcklogs] = useState<any[]>([]);
   const [productDistribution, setProductDistribution] = useState<any[]>([]);
   const [drillDownSummaryData, setDrillDownSummaryData] = useState<any[]>([]);
+  
+  // State for drill-down navigation
+  const [currentView, setCurrentView] = useState<'regions' | 'customers'>('regions');
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [breadcrumbs, setBreadcrumbs] = useState<{label: string, view: 'regions' | 'customers', region?: string}[]>(
+    [{label: 'Regions', view: 'regions'}]
+  );
   // Create a theme instance with light mode
   const theme = createTheme({
     palette: {
@@ -411,15 +420,39 @@ const Dashboard: React.FC = () => {
         : 'http://localhost:4901';
         
       const response = await axios.post(`${baseUrl}/api/dashboard/get/drillDownSummary`, requestFilters);
-      console.log("fetchDrillDownSummary response", response.data.data.drillDownSummary);
+      console.log("fetchDrillDownSummary response", response.data.data.regionStats);
       
       // Update state with the fetched data
-      setDrillDownSummaryData(response.data.data.drillDownSummary);
+      setDrillDownSummaryData(response.data.data.regionStats);
+      
+      // Reset drill-down navigation when filters change
+      setCurrentView('regions');
+      setSelectedRegion(null);
+      setBreadcrumbs([{label: 'Regions', view: 'regions'}]);
+      
       setError(null);
     } catch (err) {
       setError('Failed to fetch drill-down summary data. Please try again later.');
       console.error('Error fetching drill-down summary data:', err);
     }
+  }
+  
+  // Handle drill-down to customer view
+  const handleDrillDown = (region: string) => {
+    setSelectedRegion(region);
+    setCurrentView('customers');
+    setBreadcrumbs([
+      {label: 'Regions', view: 'regions'},
+      {label: region, view: 'customers', region}
+    ]);
+  }
+  
+  // Handle navigation via breadcrumbs
+  const handleBreadcrumbClick = (index: number) => {
+    const breadcrumb = breadcrumbs[index];
+    setCurrentView(breadcrumb.view);
+    setSelectedRegion(breadcrumb.region || null);
+    setBreadcrumbs(breadcrumbs.slice(0, index + 1));
   }
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -599,7 +632,7 @@ const Dashboard: React.FC = () => {
         fill="white"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
-        fontSize={12}
+        fontSize={10}
         fontWeight="bold"
       >
         {`${name} ${(percent * 100).toFixed(0)}%`}
@@ -1306,8 +1339,8 @@ const Dashboard: React.FC = () => {
                     <Typography variant="h6">Monthly Trend: Bookings vs Billings</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: '100%', height: 400 }}>
-                  <ResponsiveContainer width="100%" height="100%">
+                <Box sx={{ width: '100%', height: 400 , overflowX:'auto'}}>
+                  <ResponsiveContainer minWidth={500} width="100%" height="95%">
                     <LineChart
                       data={monthlyTrndBllVsBkngsData}
                       margin={{
@@ -1352,8 +1385,8 @@ const Dashboard: React.FC = () => {
                     <Typography variant="h6">Backlog by Region</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: '100%', height: 400 }}>
-                  <ResponsiveContainer width="100%" height="100%">
+                <Box sx={{ width: '100%', height: 300 , overflowX:'auto'}}>
+                  <ResponsiveContainer minWidth={400} width="100%" height="100%">
                     <BarChart
                       data={regionwiseBcklogs}
                       margin={{
@@ -1401,7 +1434,7 @@ const Dashboard: React.FC = () => {
                         cy="50%"
                         labelLine={false}
                         label={renderCustomizedLabel}
-                        outerRadius={150}
+                        outerRadius={140}
                         fill="#8884d8"
                         dataKey="value"
                       >
@@ -1432,111 +1465,328 @@ const Dashboard: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.12)'
                 }
               }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
-                    <EqualizerIcon />
-                  </Avatar>
-                  <Typography variant="h5" component="h2" sx={{ fontWeight: 500 }}>
-                    Detailed Data Analysis
-                  </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
+                      <EqualizerIcon />
+                    </Avatar>
+                    <Typography variant="h5" component="h2" sx={{ fontWeight: 500 }}>
+                      Detailed Data Analysis
+                    </Typography>
+                  </Box>
+                  
+                  {/* Breadcrumb Navigation */}
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {breadcrumbs.map((crumb, index) => (
+                      <React.Fragment key={index}>
+                        {index > 0 && (
+                          <Typography variant="body2" sx={{ mx: 1, color: 'text.secondary' }}>
+                            /
+                          </Typography>
+                        )}
+                        <Typography 
+                          variant="body2" 
+                          sx={{
+                            fontWeight: index === breadcrumbs.length - 1 ? 600 : 400,
+                            color: index === breadcrumbs.length - 1 ? 'primary.main' : 'text.primary',
+                            cursor: index === breadcrumbs.length - 1 ? 'default' : 'pointer',
+                            '&:hover': {
+                              textDecoration: index === breadcrumbs.length - 1 ? 'none' : 'underline'
+                            }
+                          }}
+                          onClick={() => index < breadcrumbs.length - 1 && handleBreadcrumbClick(index)}
+                        >
+                          {crumb.label}
+                        </Typography>
+                      </React.Fragment>
+                    ))}
+                    
+                    {/* Back Button - Only show when in customer view */}
+                    {currentView === 'customers' && (
+                      <Button 
+                        variant="contained" 
+                        color="primary" 
+                        size="small" 
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => handleBreadcrumbClick(0)}
+                        sx={{ ml: 2 }}
+                      >
+                        Back to Regions
+                      </Button>
+                    )}
+                  </Box>
                 </Box>
+                
                 <Box sx={{ mt: 2, height: 500 }}>
-                  <DataGrid
-                    dataSource={drillDownSummaryData}
-                    showBorders={true}
-                    columnAutoWidth={true}
-                    rowAlternationEnabled={true}
-                    allowColumnReordering={true}
-                    className="colored-header-grid"
-                    onExporting={onExporting}
-                  >
-                    <Scrolling columnRenderingMode="virtual" />
-                    <ColumnChooser enabled={true} />
-                    <GroupPanel visible={true} />
-                    <SearchPanel visible={true} width={240} placeholder="Search..." />
-                    <FilterRow visible={true} />
-                    <HeaderFilter visible={true} />
-                    <Sorting mode="multiple" />
-                    <Export enabled={true} allowExportSelectedData={true} />
+                  {currentView === 'regions' ? (
+                    <DataGrid
+                      dataSource={drillDownSummaryData}
+                      showBorders={true}
+                      columnAutoWidth={true}
+                      rowAlternationEnabled={true}
+                      allowColumnReordering={true}
+                      className="colored-header-grid"
+                      onExporting={onExporting}
+                      onRowClick={(e) => {
+                        if (e.data && e.data.region) {
+                          handleDrillDown(e.data.region);
+                        }
+                      }}
+                    >
+                      <Scrolling columnRenderingMode="virtual" />
+                      <ColumnChooser enabled={true} />
+                      <GroupPanel visible={true} />
+                      <SearchPanel visible={true} width={240} placeholder="Search..." />
+                      <FilterRow visible={true} />
+                      <HeaderFilter visible={true} />
+                      <Sorting mode="multiple" />
+                      <Export enabled={true} allowExportSelectedData={true} />
 
-                    <Column dataField="customer" caption="Customer" />
-                    <Column dataField="region" caption="Region" />
-                    <Column dataField="product" caption="Product" />
-                    <Column
-                      dataField="totalBookings"
-                      caption="Total Bookings"
-                      dataType="number"
-                      format="currency"
-                      alignment="right"
-                      cellRender={currencyFormatter}
-                      allowFiltering={false}
-                      allowHeaderFiltering={false}
-                    />
-                    <Column
-                      dataField="totalBillings"
-                      caption="Total Billings"
-                      dataType="number"
-                      format="currency"
-                      alignment="right"
-                      cellRender={currencyFormatter}
-                      allowFiltering={false}
-                      allowHeaderFiltering={false}
-                    />
-                    <Column
-                      dataField="backlog"
-                      caption="Backlog"
-                      dataType="number"
-                      format="currency"
-                      alignment="right"
-                      cellRender={currencyFormatter}
-                      allowFiltering={false}
-                      allowHeaderFiltering={false}
-                    />
-                    <Column
-                      dataField="bookToBillRatio"
-                      caption="Book-to-Bill Ratio"
-                      dataType="number"
-                      alignment="right"
-                      cellRender={ratioFormatter}
-                      allowFiltering={false}
-                      allowHeaderFiltering={false}
-                    />
+                      <Column type="buttons" width={70} caption="S.No." cellRender={(cellData) => {
+                        return <span>{cellData.rowIndex + 1}</span>;
+                      }} />
+                      <Column 
+                        dataField="region" 
+                        caption="Region" 
+                        cellRender={(cell) => (
+                          <span style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}>
+                            {cell.value}
+                          </span>
+                        )} 
+                      />
+                      <Column 
+                        dataField="bookingCustomersCount" 
+                        caption="Booking Customers" 
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column 
+                        dataField="billingCustomersCount" 
+                        caption="Billing Customers" 
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column 
+                        dataField="backlogCustomersCount" 
+                        caption="Backlog Customers" 
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column
+                        dataField="totalBookings"
+                        caption="Total Bookings"
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column
+                        dataField="bookingAmount"
+                        caption="Booking Amount"
+                        dataType="number"
+                        format="currency"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        )}
+                      />
+                      <Column
+                        dataField="totalBillings"
+                        caption="Total Billings"
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column
+                        dataField="billingAmount"
+                        caption="Billing Amount"
+                        dataType="number"
+                        format="currency"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        )}
+                      />
+                      <Column
+                        dataField="totalBacklogs"
+                        caption="Total Backlogs"
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column
+                        dataField="backlogAmount"
+                        caption="Backlog Amount"
+                        dataType="number"
+                        format="currency"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        )}
+                      />
+                      <Column
+                        dataField="bookToBillRatio"
+                        caption="Book-to-Bill Ratio"
+                        dataType="number"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span style={{ 
+                            backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            display: 'inline-block',
+                            fontWeight: cell.value < 0.9 ? 'bold' : 'normal'
+                          }}>
+                            {cell.value}
+                          </span>
+                        )}
+                      />
+                      <Column
+                        dataField="bookToBillAmountRatio"
+                        caption="Book-to-Bill Amount Ratio"
+                        dataType="number"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span style={{ 
+                            backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            display: 'inline-block',
+                            fontWeight: cell.value < 0.9 ? 'bold' : 'normal'
+                          }}>
+                            {cell.value}
+                          </span>
+                        )}
+                      />
 
-                    <Paging defaultPageSize={10} />
-                    <Pager
-                      showPageSizeSelector={true}
-                      allowedPageSizes={[5, 10, 20]}
-                      showInfo={true}
-                      showNavigationButtons={true}
-                    />
+                      <Paging defaultPageSize={10} />
+                      <Pager
+                        showPageSizeSelector={true}
+                        allowedPageSizes={[5, 10, 20]}
+                        showInfo={true}
+                        showNavigationButtons={true}
+                      />
+                    </DataGrid>
+                  ) : (
+                    <DataGrid
+                      dataSource={drillDownSummaryData.find(r => r.region === selectedRegion)?.customers || []}
+                      showBorders={true}
+                      columnAutoWidth={true}
+                      rowAlternationEnabled={true}
+                      allowColumnReordering={true}
+                      className="colored-header-grid"
+                      onExporting={onExporting}
+                    >
+                      <Scrolling columnRenderingMode="virtual" />
+                      <ColumnChooser enabled={true} />
+                      <GroupPanel visible={true} />
+                      <SearchPanel visible={true} width={240} placeholder="Search..." />
+                      <FilterRow visible={true} />
+                      <HeaderFilter visible={true} />
+                      <Sorting mode="multiple" />
+                      <Export enabled={true} allowExportSelectedData={true} />
 
-                    <Summary>
-                      <TotalItem
-                        column="totalBookings"
-                        summaryType="sum"
-                        valueFormat="currency"
-                        displayFormat="Total: {0}"
+                      <Column type="buttons" width={70} caption="S.No." cellRender={(cellData) => {
+                        return <span>{cellData.rowIndex + 1}</span>;
+                      }} />
+                      <Column dataField="customer" caption="Customer" />
+                      <Column 
+                        dataField="region" 
+                        caption="Region" 
+                        cellRender={(cell) => (
+                          <span style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}>
+                            {cell.value}
+                          </span>
+                        )} 
                       />
-                      <TotalItem
-                        column="totalBillings"
-                        summaryType="sum"
-                        valueFormat="currency"
-                        displayFormat="Total: {0}"
+                      <Column
+                        dataField="bookings"
+                        caption="Bookings"
+                        dataType="number"
+                        alignment="right"
                       />
-                      <TotalItem
-                        column="backlog"
-                        summaryType="sum"
-                        valueFormat="currency"
-                        displayFormat="Total: {0}"
+                      <Column
+                        dataField="bookingAmount"
+                        caption="Booking Amount"
+                        dataType="number"
+                        format="currency"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        )}
                       />
-                      <TotalItem
-                        column="bookToBillRatio"
-                        summaryType="avg"
-                        valueFormat="fixedPoint"
-                        displayFormat="Avg: {0}"
+                      <Column
+                        dataField="billings"
+                        caption="Billings"
+                        dataType="number"
+                        alignment="right"
                       />
-                    </Summary>
-                  </DataGrid>
+                      <Column
+                        dataField="billingAmount"
+                        caption="Billing Amount"
+                        dataType="number"
+                        format="currency"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        )}
+                      />
+                      <Column
+                        dataField="backlogs"
+                        caption="Backlogs"
+                        dataType="number"
+                        alignment="right"
+                      />
+                      <Column
+                        dataField="backlogAmount"
+                        caption="Backlog Amount"
+                        dataType="number"
+                        format="currency"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        )}
+                      />
+                      <Column
+                        dataField="bookToBillRatio"
+                        caption="Book-to-Bill Ratio"
+                        dataType="number"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span style={{ 
+                            backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            display: 'inline-block',
+                            fontWeight: cell.value < 0.9 ? 'bold' : 'normal'
+                          }}>
+                            {cell.value}
+                          </span>
+                        )}
+                      />
+                      <Column
+                        dataField="bookToBillAmountRatio"
+                        caption="Book-to-Bill Amount Ratio"
+                        dataType="number"
+                        alignment="right"
+                        cellRender={(cell) => (
+                          <span style={{ 
+                            backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            display: 'inline-block',
+                            fontWeight: cell.value < 0.9 ? 'bold' : 'normal'
+                          }}>
+                            {cell.value}
+                          </span>
+                        )}
+                      />
+
+                      <Paging defaultPageSize={10} />
+                      <Pager
+                        showPageSizeSelector={true}
+                        allowedPageSizes={[5, 10, 20]}
+                        showInfo={true}
+                        showNavigationButtons={true}
+                      />
+                    </DataGrid>
+                  )}
                 </Box>
               </Paper>
             </Box>

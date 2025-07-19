@@ -679,68 +679,207 @@ exports.getDrillDownSummaryCtrl = async (req, res) => {
     // Filter data based on request filters
     const filteredBookings = filterData(bookingsSheet, filters);
     const filteredBillings = filterData(billingsSheet, filters);
+    const filteredBacklog = filterData(backlogSheet, filters);
     
-    // Create a map to store aggregated data by customer, region, and product
-    const aggregatedData = new Map();
+    // Get region-wise statistics
+    const regionStats = {};
     
-    // Process bookings data
+    // Process bookings data by region
     filteredBookings.forEach(booking => {
-      const key = `${booking.customer}|${booking.region}|${booking.product}`;
-      if (!aggregatedData.has(key)) {
-        aggregatedData.set(key, {
-          customer: booking.customer,
-          region: booking.region,
-          product: booking.product,
+      const region = booking.Region || 'Unknown';
+      const customer = booking.Customer || 'Unknown';
+      
+      if (!regionStats[region]) {
+        regionStats[region] = {
+          region: region,
+          bookingCustomers: new Set(),
+          billingCustomers: new Set(),
+          backlogCustomers: new Set(),
           totalBookings: 0,
+          bookingAmount: 0,
           totalBillings: 0,
-          backlog: 0,
-          bookToBillRatio: 0
-        });
+          billingAmount: 0,
+          totalBacklogs: 0,
+          backlogAmount: 0,
+          customers: {}
+        };
       }
       
-      const record = aggregatedData.get(key);
-      record.totalBookings += booking.amount || 0;
+      // Add customer to booking customers set
+      regionStats[region].bookingCustomers.add(customer);
+      
+      // Increment booking count and amount
+      regionStats[region].totalBookings++;
+      regionStats[region].bookingAmount += booking.Booking_Amount || 0;
+      
+      // Initialize or update customer data
+      if (!regionStats[region].customers[customer]) {
+        regionStats[region].customers[customer] = {
+          customer: customer,
+          region: region,
+          bookings: 0,
+          bookingAmount: 0,
+          billings: 0,
+          billingAmount: 0,
+          backlogs: 0,
+          backlogAmount: 0
+        };
+      }
+      
+      // Update customer booking data
+      regionStats[region].customers[customer].bookings++;
+      regionStats[region].customers[customer].bookingAmount += booking.Booking_Amount || 0;
     });
     
-    // Process billings data
+    // Process billings data by region
     filteredBillings.forEach(billing => {
-      const key = `${billing.customer}|${billing.region}|${billing.product}`;
-      if (!aggregatedData.has(key)) {
-        aggregatedData.set(key, {
-          customer: billing.customer,
-          region: billing.region,
-          product: billing.product,
+      const region = billing.Region || 'Unknown';
+      const customer = billing.Customer || 'Unknown';
+      
+      if (!regionStats[region]) {
+        regionStats[region] = {
+          region: region,
+          bookingCustomers: new Set(),
+          billingCustomers: new Set(),
+          backlogCustomers: new Set(),
           totalBookings: 0,
+          bookingAmount: 0,
           totalBillings: 0,
-          backlog: 0,
-          bookToBillRatio: 0
-        });
+          billingAmount: 0,
+          totalBacklogs: 0,
+          backlogAmount: 0,
+          customers: {}
+        };
       }
       
-      const record = aggregatedData.get(key);
-      record.totalBillings += billing.amount || 0;
+      // Add customer to billing customers set
+      regionStats[region].billingCustomers.add(customer);
+      
+      // Increment billing count and amount
+      regionStats[region].totalBillings++;
+      regionStats[region].billingAmount += billing.Billed_Amount || 0;
+      
+      // Initialize or update customer data
+      if (!regionStats[region].customers[customer]) {
+        regionStats[region].customers[customer] = {
+          customer: customer,
+          region: region,
+          bookings: 0,
+          bookingAmount: 0,
+          billings: 0,
+          billingAmount: 0,
+          backlogs: 0,
+          backlogAmount: 0
+        };
+      }
+      
+      // Update customer billing data
+      regionStats[region].customers[customer].billings++;
+      regionStats[region].customers[customer].billingAmount += billing.Billed_Amount || 0;
     });
     
-    // Calculate backlog and book-to-bill ratio for each record
-    const drillDownData = Array.from(aggregatedData.values()).map((record, index) => {
-      // Calculate backlog (bookings - billings)
-      record.backlog = record.totalBookings - record.totalBillings;
+    // Process backlog data by region
+    filteredBacklog.forEach(backlog => {
+      const region = backlog.Region || 'Unknown';
+      const customer = backlog.Customer || 'Unknown';
       
-      // Calculate book-to-bill ratio (avoid division by zero)
-      record.bookToBillRatio = record.totalBillings > 0 
-        ? parseFloat((record.totalBookings / record.totalBillings).toFixed(2)) 
-        : 0;
+      if (!regionStats[region]) {
+        regionStats[region] = {
+          region: region,
+          bookingCustomers: new Set(),
+          billingCustomers: new Set(),
+          backlogCustomers: new Set(),
+          totalBookings: 0,
+          bookingAmount: 0,
+          totalBillings: 0,
+          billingAmount: 0,
+          totalBacklogs: 0,
+          backlogAmount: 0,
+          customers: {}
+        };
+      }
       
-      // Add an ID for the grid
-      record.id = index + 1;
+      // Add customer to backlog customers set
+      regionStats[region].backlogCustomers.add(customer);
       
-      return record;
+      // Increment backlog count and amount
+      regionStats[region].totalBacklogs++;
+      regionStats[region].backlogAmount += backlog.Backlog_Amount || 0;
+      
+      // Initialize or update customer data
+      if (!regionStats[region].customers[customer]) {
+        regionStats[region].customers[customer] = {
+          customer: customer,
+          region: region,
+          bookings: 0,
+          bookingAmount: 0,
+          billings: 0,
+          billingAmount: 0,
+          backlogs: 0,
+          backlogAmount: 0
+        };
+      }
+      
+      // Update customer backlog data
+      regionStats[region].customers[customer].backlogs++;
+      regionStats[region].customers[customer].backlogAmount += backlog.Backlog_Amount || 0;
+    });
+    
+    // Convert region stats to array and format for response
+    const regionStatsArray = Object.values(regionStats).map(region => {
+      // Calculate book-to-bill ratio for the region
+      const bookToBillRatio = region.totalBillings > 0 ? 
+        parseFloat((region.totalBookings / region.totalBillings).toFixed(2)) : 0;
+      
+      // Calculate book-to-bill amount ratio for the region
+      const bookToBillAmountRatio = region.billingAmount > 0 ? 
+        parseFloat((region.bookingAmount / region.billingAmount).toFixed(2)) : 0;
+      
+      // Convert Sets to counts
+      const formattedRegion = {
+        region: region.region,
+        bookingCustomersCount: region.bookingCustomers.size,
+        billingCustomersCount: region.billingCustomers.size,
+        backlogCustomersCount: region.backlogCustomers.size,
+        totalBookings: region.totalBookings,
+        bookingAmount: parseFloat(region.bookingAmount.toFixed(2)),
+        totalBillings: region.totalBillings,
+        billingAmount: parseFloat(region.billingAmount.toFixed(2)),
+        totalBacklogs: region.totalBacklogs,
+        backlogAmount: parseFloat(region.backlogAmount.toFixed(2)),
+        bookToBillRatio: bookToBillRatio,
+        bookToBillAmountRatio: bookToBillAmountRatio,
+        // Convert customers object to array for easier consumption in frontend
+        customers: Object.values(region.customers)
+          .map(customer => {
+            // Calculate book-to-bill ratio for each customer
+            const customerBookToBillRatio = customer.billings > 0 ? 
+              parseFloat((customer.bookings / customer.billings).toFixed(2)) : 0;
+            
+            // Calculate book-to-bill amount ratio for each customer
+            const customerBookToBillAmountRatio = customer.billingAmount > 0 ? 
+              parseFloat((customer.bookingAmount / customer.billingAmount).toFixed(2)) : 0;
+            
+            return {
+              ...customer,
+              bookingAmount: parseFloat(customer.bookingAmount.toFixed(2)),
+              billingAmount: parseFloat(customer.billingAmount.toFixed(2)),
+              backlogAmount: parseFloat(customer.backlogAmount.toFixed(2)),
+              bookToBillRatio: customerBookToBillRatio,
+              bookToBillAmountRatio: customerBookToBillAmountRatio
+            };
+          })
+          // Sort customers alphabetically by name
+          .sort((a, b) => a.customer.localeCompare(b.customer))
+      };
+      
+      return formattedRegion;
     });
     
     res.status(200).json({
       success: true,
       data: {
-        drillDownSummary: drillDownData
+        regionStats: regionStatsArray
       }
     });
   } catch (error) {
