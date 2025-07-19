@@ -3,9 +3,17 @@ const router = express.Router();
 const dashboardController = require('../controllers/dashboard.controller');
 
 // GET dashboard data
-router.get('/', dashboardController.getDashboardData);
+router.post('/summaryData', dashboardController.getDashboardDataCtrl);
 
-// POST create new dashboard
-router.post('/', dashboardController.createDashboard);
+router.get('/get/filterData',dashboardController.getFilterDataCtrl);
+
+router.post('/get/mnthly/Trnd/bllVsBkngs',dashboardController.getMonthlyTrndBllVsBkngsCtrl);
+
+router.post('/get/backlogByRegion',dashboardController.getBacklogByRegionCtrl);
+
+router.post('/get/productDistribution',dashboardController.getProductDistributionCtrl);
+
+// Get drill-down summary data
+router.post('/get/drillDownSummary',dashboardController.getDrillDownSummaryCtrl);
 
 module.exports = router;
