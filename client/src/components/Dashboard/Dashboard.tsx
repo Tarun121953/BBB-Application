@@ -82,6 +82,12 @@ interface DashboardMetrics {
   totalBookingsYTD: number;
   totalBacklogAmount: number;
   bookToBillRatio: number;
+  totalBacklogMTD: number;
+  totalBacklogYTD: number;
+  bookToBillRatioMTD: number;
+  bookToBillRatioYTD: number;
+  
+  
   
   // Additional metrics
   totalBookings: number;
@@ -1112,6 +1118,7 @@ const Dashboard: React.FC = () => {
                       <AssignmentOutlinedIcon sx={{ color: '#ffa726' }} />
                     </Avatar>
                   </Box>
+                  
                   <Typography 
                     variant="h1" 
                     component="div" 
@@ -1135,6 +1142,29 @@ const Dashboard: React.FC = () => {
                       />
                     ) : '₹0.00'}
                   </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                        Amount
+                      </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                      MTD: {animationReady && dashboardData ? (
+                        <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
+                          ₹{dashboardData.metrics.totalBacklogMTD ? 
+                            dashboardData.metrics.totalBacklogMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                            '0.00'}
+                        </span>
+                      ) : '₹0.00'}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                      YTD: {animationReady && dashboardData ? (
+                        <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
+                          ₹{dashboardData.metrics.totalBacklogYTD ? 
+                            dashboardData.metrics.totalBacklogYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                            '0.00'}
+                        </span>
+                      ) : '₹0.00'}
+                    </Typography>
+                  </Box>
                   <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center' }}>
                     {renderPercentageChange(`${dashboardData.metrics.currentMonthBacklogAmountChange}%`, dashboardData.metrics.currentMonthBacklogAmountChange >= 0)}
                     <Typography 
@@ -1222,6 +1252,29 @@ const Dashboard: React.FC = () => {
                       />
                     ) : '0.00'}
                   </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                        Ratio
+                      </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                      MTD: {animationReady && dashboardData ? (
+                        <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
+                          ₹{dashboardData.metrics.bookToBillRatioMTD ? 
+                            dashboardData.metrics.bookToBillRatioMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                            '0.00'}
+                        </span>
+                      ) : '₹0.00'}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                      YTD: {animationReady && dashboardData ? (
+                        <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
+                          ₹{dashboardData.metrics.bookToBillRatioYTD ? 
+                            dashboardData.metrics.bookToBillRatioYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                            '0.00'}
+                        </span>
+                      ) : '₹0.00'}
+                    </Typography>
+                  </Box>
                   <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center' }}>
                       {renderPercentageChange(`${dashboardData.metrics.currentMonthBookToBillRatioChange}%`, dashboardData.metrics.currentMonthBookToBillRatioChange > 0)}
                     <Typography 

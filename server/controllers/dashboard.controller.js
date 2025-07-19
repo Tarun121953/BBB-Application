@@ -208,9 +208,87 @@ exports.getDashboardDataCtrl = async (req, res) => {
     // Get current and previous month data
     const currentAndPreviousMonthData = getCurrentAndPreviousMonthData();
     
-    // Calculate MTD and YTD metrics using unfiltered data (not affected by date range filters)
-    const bookingsMetrics = calculateMTDYTD(bookingsSheet,'Booking_Amount');
-    const billingsMetrics = calculateMTDYTD(billingsSheet,'Billed_Amount');
+    // Create non-date filters for MTD/YTD calculations (only region, product, customer)
+    const nonDateFilters = {
+      region: filters.region || null,
+      product: filters.product || null,
+      customer: filters.customer || null
+    };
+    
+    // Filter data based on non-date filters for MTD/YTD calculations
+    const mtdYtdFilterData = (data) => {
+      return data.filter(item => {
+        // Region filter
+        if (nonDateFilters.region && item.Region !== nonDateFilters.region) {
+          return false;
+        }
+        
+        // Product filter
+        if (nonDateFilters.product && item.Product !== nonDateFilters.product) {
+          return false;
+        }
+        
+        // Customer filter
+        if (nonDateFilters.customer && item.Customer !== nonDateFilters.customer) {
+          return false;
+        }
+        
+        return true;
+      });
+    };
+    
+    // Apply non-date filters to data for MTD/YTD calculations
+    const filteredForMtdYtdBookings = mtdYtdFilterData(bookingsSheet);
+    const filteredForMtdYtdBillings = mtdYtdFilterData(billingsSheet);
+    const filteredForMtdYtdBacklog = mtdYtdFilterData(backlogSheet);
+    
+    // Calculate MTD and YTD metrics using data filtered only by non-date filters
+    const bookingsMetrics = calculateMTDYTD(filteredForMtdYtdBookings, 'Booking_Amount');
+    const billingsMetrics = calculateMTDYTD(filteredForMtdYtdBillings, 'Billed_Amount');
+    const backlogMetrics = calculateMTDYTD(filteredForMtdYtdBacklog, 'Backlog_Amount');
+    
+    // Calculate MTD and YTD for book-to-bill ratio
+    const calculateBookToBillRatioMTDYTD = () => {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      
+      // Filter data for MTD
+      const mtdBookings = filteredForMtdYtdBookings.filter(item => {
+        const itemDate = new Date(item.Date);
+        return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
+      });
+      
+      const mtdBillings = filteredForMtdYtdBillings.filter(item => {
+        const itemDate = new Date(item.Date);
+        return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
+      });
+      
+      // Filter data for YTD
+      const ytdBookings = filteredForMtdYtdBookings.filter(item => {
+        const itemDate = new Date(item.Date);
+        return itemDate.getFullYear() === currentYear;
+      });
+      
+      const ytdBillings = filteredForMtdYtdBillings.filter(item => {
+        const itemDate = new Date(item.Date);
+        return itemDate.getFullYear() === currentYear;
+      });
+      
+      // Calculate book-to-bill ratios
+      const mtdRatio = mtdBookings.length > 0 && mtdBillings.length > 0 ? 
+        mtdBookings.length / mtdBillings.length : 0;
+      
+      const ytdRatio = ytdBookings.length > 0 && ytdBillings.length > 0 ? 
+        ytdBookings.length / ytdBillings.length : 0;
+      
+      return {
+        mtd: parseFloat(mtdRatio.toFixed(2)),
+        ytd: parseFloat(ytdRatio.toFixed(2))
+      };
+    };
+    
+    const bookToBillRatioMetrics = calculateBookToBillRatioMTDYTD();
     
     // Calculate total backlog amount
     const totalBacklogAmount = filteredBacklog.reduce((sum, item) => sum + (item.Backlog_Amount || 0), 0);
@@ -252,6 +330,10 @@ exports.getDashboardDataCtrl = async (req, res) => {
         totalBillingsYTD: billingsMetrics.ytd,
         totalBookingsMTD: bookingsMetrics.mtd,
         totalBookingsYTD: bookingsMetrics.ytd,
+        totalBacklogMTD: backlogMetrics.mtd,
+        totalBacklogYTD: backlogMetrics.ytd,
+        bookToBillRatioMTD: bookToBillRatioMetrics.mtd,
+        bookToBillRatioYTD: bookToBillRatioMetrics.ytd,
         totalBacklogAmount: totalBacklogAmount,
         totalBacklogAmountChange: parseFloat(totalBacklogAmountChange.toFixed(2)),
         bookToBillRatio: parseFloat(bookToBillRatio.toFixed(2)),
