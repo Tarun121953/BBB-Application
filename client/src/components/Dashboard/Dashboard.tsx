@@ -260,8 +260,13 @@ const Dashboard: React.FC = () => {
         product: filters.product || null,
         customer: filters.customer || null
       };
+      // Determine API base URL based on environment
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://bbb-application.onrender.com' 
+        : 'http://localhost:4901';
+      
       // Send request with axios including filters
-      const response = await axios.post('http://localhost:4901/api/dashboard/summaryData', requestFilters);
+      const response = await axios.post(`${baseUrl}/api/dashboard/summaryData`, requestFilters);
       console.log("response",response.data.data);
       setDashboardData(response.data.data);
       setError(null);
@@ -290,8 +295,14 @@ const Dashboard: React.FC = () => {
         customer: filters.customer || null
       };
       console.log("requestFilters",requestFilters);
+      
+      // Determine API base URL based on environment
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://bbb-application.onrender.com' 
+        : 'http://localhost:4901';
+        
       // Send request with axios including filters
-      const response = await axios.post('http://localhost:4901/api/dashboard/get/mnthly/Trnd/bllVsBkngs', requestFilters);
+      const response = await axios.post(`${baseUrl}/api/dashboard/get/mnthly/Trnd/bllVsBkngs`, requestFilters);
      console.log("response",response.data.data)
       setMonthlyTrndBllVsBkngsData(response.data.data.monthlyTrend);
       setError(null);
@@ -320,7 +331,12 @@ const Dashboard: React.FC = () => {
         customer: filters.customer || null
       };
       // Send request with axios including filters
-      const response = await axios.post('http://localhost:4901/api/dashboard/get/backlogByRegion', requestFilters);
+      // Determine API base URL based on environment
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://bbb-application.onrender.com' 
+        : 'http://localhost:4901';
+        
+      const response = await axios.post(`${baseUrl}/api/dashboard/get/backlogByRegion`, requestFilters);
      console.log("respofetchRegionwiseBcklogs",response.data.data.backlogByRegion)
       setRegionwiseBcklogs(response.data.data.backlogByRegion);
       setError(null);
@@ -349,7 +365,12 @@ const Dashboard: React.FC = () => {
         customer: filters.customer || null
       };
       // Send request with axios including filters
-      const response = await axios.post('http://localhost:4901/api/dashboard/get/productDistribution', requestFilters);
+      // Determine API base URL based on environment
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://bbb-application.onrender.com' 
+        : 'http://localhost:4901';
+        
+      const response = await axios.post(`${baseUrl}/api/dashboard/get/productDistribution`, requestFilters);
      console.log("respofetchProductDistribution",response.data.data.productDistribution)
       setProductDistribution(response.data.data.productDistribution);
       setError(null);
@@ -378,7 +399,12 @@ const Dashboard: React.FC = () => {
       };
       
       // Send request with axios including filters
-      const response = await axios.post('http://localhost:4901/api/dashboard/get/drillDownSummary', requestFilters);
+      // Determine API base URL based on environment
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://bbb-application.onrender.com' 
+        : 'http://localhost:4901';
+        
+      const response = await axios.post(`${baseUrl}/api/dashboard/get/drillDownSummary`, requestFilters);
       console.log("fetchDrillDownSummary response", response.data.data.drillDownSummary);
       
       // Update state with the fetched data

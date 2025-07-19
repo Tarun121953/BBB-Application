@@ -257,7 +257,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     
     const getFilterData = async () => {
         try {
-            const response = await axios.get('http://localhost:4901/api/dashboard/get/filterData');
+            // Determine API base URL based on environment
+            const baseUrl = process.env.NODE_ENV === 'production' 
+                ? 'https://bbb-application.onrender.com' 
+                : 'http://localhost:4901';
+                
+            const response = await axios.get(`${baseUrl}/api/dashboard/get/filterData`);
             setProducts(response.data.data.products)
             setCustomers(response.data.data.customers)
             setRegions(response.data.data.regions)
