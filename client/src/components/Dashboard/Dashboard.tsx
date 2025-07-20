@@ -1739,24 +1739,28 @@ const Dashboard: React.FC = () => {
                         caption="Booking Customers" 
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                       />
                       <Column 
                         dataField="billingCustomersCount" 
                         caption="Billing Customers" 
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                       />
                       <Column 
                         dataField="backlogCustomersCount" 
                         caption="Backlog Customers" 
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                       />
                       <Column
                         dataField="totalBookings"
                         caption="Total Bookings"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                       />
                       <Column
                         dataField="bookingAmount"
@@ -1764,6 +1768,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         format="currency"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         )}
@@ -1773,6 +1778,7 @@ const Dashboard: React.FC = () => {
                         caption="Total Billings"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                       />
                       <Column
                         dataField="billingAmount"
@@ -1780,6 +1786,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         format="currency"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         )}
@@ -1789,6 +1796,7 @@ const Dashboard: React.FC = () => {
                         caption="Total Backlogs"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                       />
                       <Column
                         dataField="backlogAmount"
@@ -1927,6 +1935,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         format="currency"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         )}
@@ -1935,6 +1944,7 @@ const Dashboard: React.FC = () => {
                         dataField="billings"
                         caption="Billings"
                         dataType="number"
+                        allowFiltering={false}
                         alignment="right"
                       />
                       <Column
@@ -1943,6 +1953,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         format="currency"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         )}
@@ -1951,6 +1962,7 @@ const Dashboard: React.FC = () => {
                         dataField="backlogs"
                         caption="Backlogs"
                         dataType="number"
+                        allowFiltering={false}
                         alignment="right"
                       />
                       <Column
@@ -1959,6 +1971,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         format="currency"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         )}
@@ -1968,6 +1981,7 @@ const Dashboard: React.FC = () => {
                         caption="Book-to-Bill Ratio"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span style={{ 
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
@@ -1985,6 +1999,7 @@ const Dashboard: React.FC = () => {
                         caption="Book-to-Bill Amount Ratio"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span style={{ 
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',

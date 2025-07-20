@@ -381,7 +381,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                             onChange={handleRegionChange}
                                             startAdornment={<LocationOnIcon sx={{ mr: 1, color: 'action.active', fontSize: 20 }} />}
                                         >
-                                        <MenuItem value=""><em>Select region</em></MenuItem>
                                         {regions.map((region: string) => (
                                             <MenuItem key={region} value={region}>{region}</MenuItem>
                                         ))}
@@ -401,7 +400,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                             onChange={handleProductChange}
                                             startAdornment={<CategoryIcon sx={{ mr: 1, color: 'action.active', fontSize: 20 }} />}
                                         >
-                                        <MenuItem value=""><em>Select product</em></MenuItem>
                                         {products.map((product: string) => (
                                             <MenuItem key={product} value={product}>{product}</MenuItem>
                                         ))}
@@ -522,9 +520,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                 value={tempFilters.region}
                                                 onChange={handleRegionChange}
                                                 startAdornment={<LocationOnIcon sx={{ mr: 1, color: 'action.active', fontSize: 20 }} />}
-                                            >
-                                                <MenuItem value=""><em>Select region</em></MenuItem>
-                                                {regions.map((region: string) => (
+                                            >                                                {regions.map((region: string) => (
                                                     <MenuItem key={region} value={region}>{region}</MenuItem>
                                                 ))}
                                             </Select>
@@ -543,7 +539,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                 onChange={handleProductChange}
                                                 startAdornment={<CategoryIcon sx={{ mr: 1, color: 'action.active', fontSize: 20 }} />}
                                             >
-                                                <MenuItem value=""><em>Select product</em></MenuItem>
                                                 {products.map((product: string) => (
                                                     <MenuItem key={product} value={product}>{product}</MenuItem>
                                                 ))}

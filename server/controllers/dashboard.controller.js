@@ -383,7 +383,7 @@ exports.getFilterDataCtrl = async (req, res) => {
   try {
     const regions = _.uniq(bookingsSheet.map(item => item.Region));
     const products = _.uniq(bookingsSheet.map(item => item.Product));
-    const customers = _.uniq(bookingsSheet.map(item => item.Customer));
+    const customers = _.uniq(bookingsSheet.map(item => item.Customer)).sort();
     res.status(200).json({
       success: true,
       data: {
