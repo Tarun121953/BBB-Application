@@ -263,11 +263,26 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 : 'http://localhost:4901';
                 
             const response = await axios.get(`${baseUrl}/api/dashboard/get/filterData`);
-            setProducts(response.data.data.products)
-            setCustomers(response.data.data.customers)
-            setRegions(response.data.data.regions)
+            
+            if (response.status === 200 && response.data && response.data.data) {
+                // Validate and set filter data with fallbacks
+                setProducts(response.data.data.products || []);
+                setCustomers(response.data.data.customers || []);
+                setRegions(response.data.data.regions || []);
+                console.log('Filter data loaded successfully');
+            } else {
+                console.error('Invalid response status or data for filter data:', response.status, response.data);
+                // Set empty arrays as fallback
+                setProducts([]);
+                setCustomers([]);
+                setRegions([]);
+            }
         } catch (error) {
-            console.log(error);
+            console.error('Failed to fetch filter data:', error);
+            // Set empty arrays as fallback on error
+            setProducts([]);
+            setCustomers([]);
+            setRegions([]);
         }
     }
     return (

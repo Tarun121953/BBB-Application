@@ -42,6 +42,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   LineChart,
   Line,
@@ -283,8 +285,14 @@ const Dashboard: React.FC = () => {
       // Send request with axios including filters
       const response = await axios.post(`${baseUrl}/api/dashboard/summaryData`, requestFilters);
       console.log("response",response.data.data);
-      setDashboardData(response.data.data);
-      setError(null);
+      
+      if (response.status === 200 && response.data && response.data.data) {
+        setDashboardData(response.data.data);
+        setError(null);
+      } else {
+        setError('Invalid response received from server. Please try again later.');
+        console.error('Invalid response status or data:', response.status, response.data);
+      }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
       console.error('Error fetching dashboard data:', err);
@@ -318,9 +326,15 @@ const Dashboard: React.FC = () => {
         
       // Send request with axios including filters
       const response = await axios.post(`${baseUrl}/api/dashboard/get/mnthly/Trnd/bllVsBkngs`, requestFilters);
-     console.log("response",response.data.data)
-      setMonthlyTrndBllVsBkngsData(response.data.data.monthlyTrend);
-      setError(null);
+      console.log("response",response.data.data)
+      
+      if (response.status === 200 && response.data && response.data.data && response.data.data.monthlyTrend) {
+        setMonthlyTrndBllVsBkngsData(response.data.data.monthlyTrend);
+        setError(null);
+      } else {
+        setError('Invalid monthly trend data received from server. Please try again later.');
+        console.error('Invalid response status or data for monthly trend:', response.status, response.data);
+      }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
       console.error('Error fetching dashboard data:', err);
@@ -352,9 +366,15 @@ const Dashboard: React.FC = () => {
         : 'http://localhost:4901';
         
       const response = await axios.post(`${baseUrl}/api/dashboard/get/backlogByRegion`, requestFilters);
-     console.log("respofetchRegionwiseBcklogs",response.data.data.backlogByRegion)
-      setRegionwiseBcklogs(response.data.data.backlogByRegion);
-      setError(null);
+      console.log("respofetchRegionwiseBcklogs",response.data.data.backlogByRegion)
+      
+      if (response.status === 200 && response.data && response.data.data && response.data.data.backlogByRegion) {
+        setRegionwiseBcklogs(response.data.data.backlogByRegion);
+        setError(null);
+      } else {
+        setError('Invalid backlog data received from server. Please try again later.');
+        console.error('Invalid response status or data for backlog by region:', response.status, response.data);
+      }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
       console.error('Error fetching dashboard data:', err);
@@ -386,9 +406,15 @@ const Dashboard: React.FC = () => {
         : 'http://localhost:4901';
         
       const response = await axios.post(`${baseUrl}/api/dashboard/get/productDistribution`, requestFilters);
-     console.log("respofetchProductDistribution",response.data.data.productDistribution)
-      setProductDistribution(response.data.data.productDistribution);
-      setError(null);
+      console.log("respofetchProductDistribution",response.data.data.productDistribution)
+      
+      if (response.status === 200 && response.data && response.data.data && response.data.data.productDistribution) {
+        setProductDistribution(response.data.data.productDistribution);
+        setError(null);
+      } else {
+        setError('Invalid product distribution data received from server. Please try again later.');
+        console.error('Invalid response status or data for product distribution:', response.status, response.data);
+      }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
       console.error('Error fetching dashboard data:', err);
@@ -422,18 +448,23 @@ const Dashboard: React.FC = () => {
       const response = await axios.post(`${baseUrl}/api/dashboard/get/drillDownSummary`, requestFilters);
       console.log("fetchDrillDownSummary response", response.data.data.regionStats);
       
-      // Update state with the fetched data
-      setDrillDownSummaryData(response.data.data.regionStats);
-      
-      // Reset drill-down navigation when filters change
-      setCurrentView('regions');
-      setSelectedRegion(null);
-      setBreadcrumbs([{label: 'Regions', view: 'regions'}]);
-      
-      setError(null);
+      if (response.status === 200 && response.data && response.data.data && response.data.data.regionStats) {
+        // Update state with the fetched data
+        setDrillDownSummaryData(response.data.data.regionStats);
+        
+        // Reset drill-down navigation when filters change
+        setCurrentView('regions');
+        setSelectedRegion(null);
+        setBreadcrumbs([{label: 'Regions', view: 'regions'}]);
+        
+        setError(null);
+      } else {
+        setError('Invalid drill-down summary data received from server. Please try again later.');
+        console.error('Invalid response status or data for drill-down summary:', response.status, response.data);
+      }
     } catch (err) {
-      setError('Failed to fetch drill-down summary data. Please try again later.');
-      console.error('Error fetching drill-down summary data:', err);
+      setError('Failed to fetch summary data. Please try again later.');
+      console.error('Error fetching summary data:', err);
     }
   }
   
@@ -512,50 +543,50 @@ const Dashboard: React.FC = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          bgcolor: 'rgba(0, 0, 0, 0.85)',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 9999,
-          color: 'white'
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 3,
-            borderRadius: 2,
-            textAlign: 'center'
-          }}
-        >
-          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
-            <InsightsIcon sx={{ fontSize: 60, color: '#3f88c5' }} />
-          </Box>
-          <CircularProgress size={48} sx={{ mb: 2, color: '#3f88c5' }} />
-          <Typography variant="h5" sx={{ mb: 1, fontWeight: 500 }}>
-            Loading Dashboard
-          </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            Preparing your analytics data...
-          </Typography>
-        </Box>
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         display: 'flex',
+  //         flexDirection: 'column',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         height: '100vh',
+  //         bgcolor: 'rgba(0, 0, 0, 0.85)',
+  //         position: 'fixed',
+  //         top: 0,
+  //         left: 0,
+  //         right: 0,
+  //         bottom: 0,
+  //         zIndex: 9999,
+  //         color: 'white'
+  //       }}
+  //     >
+  //       <Box
+  //         sx={{
+  //           display: 'flex',
+  //           flexDirection: 'column',
+  //           alignItems: 'center',
+  //           justifyContent: 'center',
+  //           p: 3,
+  //           borderRadius: 2,
+  //           textAlign: 'center'
+  //         }}
+  //       >
+  //         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
+  //           <InsightsIcon sx={{ fontSize: 60, color: '#3f88c5' }} />
+  //         </Box>
+  //         <CircularProgress size={48} sx={{ mb: 2, color: '#3f88c5' }} />
+  //         <Typography variant="h5" sx={{ mb: 1, fontWeight: 500 }}>
+  //           Loading Dashboard
+  //         </Typography>
+  //         <Typography variant="body2" sx={{ opacity: 0.7 }}>
+  //           Preparing your analytics data...
+  //         </Typography>
+  //       </Box>
+  //     </Box>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -565,14 +596,89 @@ const Dashboard: React.FC = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh',
+          minHeight: '100vh',
           bgcolor: 'background.default',
-          color: 'error.main'
+          p: 3
         }}
       >
-        <Typography variant="h2" sx={{ mb: 2 }}>Error</Typography>
-        <Typography>{error}</Typography>
-        <Typography sx={{ mt: 1 }}>Make sure the server is running on port 4901</Typography>
+        <Paper
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            maxWidth: 600,
+            width: '100%',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}
+        >
+          <Avatar
+            sx={{
+              bgcolor: 'error.light',
+              width: 80,
+              height: 80,
+              mx: 'auto',
+              mb: 3
+            }}
+          >
+            <ErrorOutlineIcon sx={{ fontSize: 40 }} />
+          </Avatar>
+          
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              mb: 2, 
+              color: 'error.main',
+              fontWeight: 600
+            }}
+          >
+            Oops! Something went wrong
+          </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              mb: 3, 
+              color: 'text.secondary',
+              lineHeight: 1.6
+            }}
+          >
+            {error}
+          </Typography>
+          
+          <Box sx={{ mb: 4 }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'text.secondary',
+                mb: 1
+              }}
+            >
+            </Typography>
+            <Box sx={{ textAlign: 'left', maxWidth: 400, mx: 'auto' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                • Check your internet connection
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                • Try refreshing the page
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Button
+            variant="contained"
+            startIcon={<RefreshIcon />}
+            onClick={() => window.location.reload()}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontSize: '1rem'
+            }}
+          >
+            Retry
+          </Button>
+        </Paper>
       </Box>
     );
   }
@@ -582,13 +688,87 @@ const Dashboard: React.FC = () => {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh',
-          bgcolor: 'background.default'
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+          p: 3
         }}
       >
-        <Typography>No dashboard data available</Typography>
+        <Paper
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            maxWidth: 600,
+            width: '100%',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}
+        >
+          <Avatar
+            sx={{
+              bgcolor: 'info.light',
+              width: 80,
+              height: 80,
+              mx: 'auto',
+              mb: 3
+            }}
+          >
+            <DashboardIcon sx={{ fontSize: 40 }} />
+          </Avatar>
+          
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              mb: 2, 
+              color: 'text.primary',
+              fontWeight: 600
+            }}
+          >
+            No Data Available
+          </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              mb: 4, 
+              color: 'text.secondary',
+              lineHeight: 1.6
+            }}
+          >
+            We couldn't find any dashboard data to display. This might be because:
+          </Typography>
+          
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ textAlign: 'left', maxWidth: 400, mx: 'auto' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                • No data matches your current filters
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                • Data is still being loaded from the server
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                • There might be a temporary server issue
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Button
+            variant="contained"
+            startIcon={<RefreshIcon />}
+            onClick={() => window.location.reload()}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontSize: '1rem'
+            }}
+          >
+            Refresh Data
+          </Button>
+        </Paper>
       </Box>
     );
   }
@@ -1292,20 +1472,20 @@ const Dashboard: React.FC = () => {
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       MTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.bookToBillRatioMTD ? 
+                          {dashboardData.metrics.bookToBillRatioMTD ? 
                             dashboardData.metrics.bookToBillRatioMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
                             '0.00'}
                         </span>
-                      ) : '₹0.00'}
+                      ) : '0.00'}
                     </Typography>
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       YTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.bookToBillRatioYTD ? 
+                          {dashboardData.metrics.bookToBillRatioYTD ? 
                             dashboardData.metrics.bookToBillRatioYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
                             '0.00'}
                         </span>
-                      ) : '₹0.00'}
+                      ) : '0.00'}
                     </Typography>
                   </Box>
                   <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center' }}>
@@ -1352,8 +1532,8 @@ const Dashboard: React.FC = () => {
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
+                      <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
+                      <Tooltip formatter={(value, name) => [`₹${Number(value).toLocaleString()}`, name]} />
                       <Legend />
                       <Line
                         type="monotone"
@@ -1398,8 +1578,8 @@ const Dashboard: React.FC = () => {
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => [`₹${value}`, 'Backlog']} />
+                      <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
+                      <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Backlog']} />
                       <Bar
                         dataKey="value"
                         name="Backlog Value"
@@ -1442,7 +1622,7 @@ const Dashboard: React.FC = () => {
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value) => [`₹${value}`, 'Market Share']} />
+                      <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Market Share']} />
                     </PieChart>
                   </ResponsiveContainer>
                 </Box>
@@ -1517,7 +1697,7 @@ const Dashboard: React.FC = () => {
                   </Box>
                 </Box>
                 
-                <Box sx={{ mt: 2, height: 500 }}>
+                <Box sx={{ mt: 2 }}>
                   {currentView === 'regions' ? (
                     <DataGrid
                       dataSource={drillDownSummaryData}
@@ -1655,6 +1835,54 @@ const Dashboard: React.FC = () => {
                         )}
                       />
 
+                      <Summary>
+                        <TotalItem
+                          column="totalBookings"
+                          summaryType="sum"
+                          displayFormat="{0}"
+                        />
+                        <TotalItem
+                          column="bookingAmount"
+                          summaryType="sum"
+                          displayFormat="₹{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="totalBillings"
+                          summaryType="sum"
+                          displayFormat="{0}"
+                        />
+                        <TotalItem
+                          column="billingAmount"
+                          summaryType="sum"
+                          displayFormat="₹{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="totalBacklogs"
+                          summaryType="sum"
+                          displayFormat="{0}"
+                        />
+                        <TotalItem
+                          column="backlogAmount"
+                          summaryType="sum"
+                          displayFormat="₹{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="bookToBillRatio"
+                          summaryType="avg"
+                          displayFormat="{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="bookToBillAmountRatio"
+                          summaryType="avg"
+                          displayFormat="{0}"
+                          valueFormat="#,##0.00"
+                        />
+                      </Summary>
+
                       <Paging defaultPageSize={10} />
                       <Pager
                         showPageSizeSelector={true}
@@ -1686,15 +1914,7 @@ const Dashboard: React.FC = () => {
                         return <span>{cellData.rowIndex + 1}</span>;
                       }} />
                       <Column dataField="customer" caption="Customer" />
-                      <Column 
-                        dataField="region" 
-                        caption="Region" 
-                        cellRender={(cell) => (
-                          <span style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}>
-                            {cell.value}
-                          </span>
-                        )} 
-                      />
+                      <Column dataField="region" caption="Region" />
                       <Column
                         dataField="bookings"
                         caption="Bookings"
@@ -1777,6 +1997,54 @@ const Dashboard: React.FC = () => {
                           </span>
                         )}
                       />
+
+                      <Summary>
+                        <TotalItem
+                          column="bookings"
+                          summaryType="sum"
+                          displayFormat="{0}"
+                        />
+                        <TotalItem
+                          column="bookingAmount"
+                          summaryType="sum"
+                          displayFormat="₹{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="billings"
+                          summaryType="sum"
+                          displayFormat="{0}"
+                        />
+                        <TotalItem
+                          column="billingAmount"
+                          summaryType="sum"
+                          displayFormat="₹{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="backlogs"
+                          summaryType="sum"
+                          displayFormat="{0}"
+                        />
+                        <TotalItem
+                          column="backlogAmount"
+                          summaryType="sum"
+                          displayFormat="₹{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="bookToBillRatio"
+                          summaryType="avg"
+                          displayFormat="{0}"
+                          valueFormat="#,##0.00"
+                        />
+                        <TotalItem
+                          column="bookToBillAmountRatio"
+                          summaryType="avg"
+                          displayFormat="{0}"
+                          valueFormat="#,##0.00"
+                        />
+                      </Summary>
 
                       <Paging defaultPageSize={10} />
                       <Pager
