@@ -45,6 +45,8 @@ A comprehensive business intelligence dashboard for tracking bookings, billings,
 
 ### Base URL: `http://localhost:4901/api/dashboard`
 
+### PRODUCTION URL: `https://bbb-application.onrender.com`
+
 #### 1. Get Filter Data
 ```http
 GET /get/filterData
@@ -299,7 +301,6 @@ BBB-Dashboard/
 
 ### Export Capabilities
 - **Excel Export**: Export filtered data to Excel format
-- **Chart Export**: Save charts as images
 - **Summary Reports**: Generate comprehensive reports with current filter settings
 
 ## 🔧 Data Processing
@@ -355,10 +356,6 @@ The system expects Excel files with three sheets:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🆘 Support
 
