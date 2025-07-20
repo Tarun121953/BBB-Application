@@ -295,12 +295,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
                 }}
             >
-                <Toolbar sx={{backgroundImage: 'url(/header-bg.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center', color: '#ffffff', position: 'relative'}}>
+                <Toolbar sx={{backgroundImage: 'url(/bbbheader.png)', backgroundSize: 'cover', backgroundPosition: 'center', color: '#ffffff', position: 'relative'}}>
                     {/* Dark overlay for better text readability */}
                     <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 0 }} />
                     
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', position: 'relative', zIndex: 1, textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}>
-                        BBB Dashboard
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', position: 'relative', zIndex: 1, textShadow: '1px 1px 2px rgba(0,0,0,0.7)', fontSize: '1.4rem', letterSpacing: '0.5px' }}>
+                        ⚡ BBB Analytics Hub
                     </Typography>
 
                     <IconButton
@@ -343,7 +343,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             <Stack spacing={2}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <TuneIcon sx={{ mr: 1, color: 'primary.main' }} />
+                                        <TuneIcon sx={{ mr: 1, color: '#1e3a8a' }} />
                                         <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Filters</Typography>
                                     </Box>
                                 </Box>
@@ -352,7 +352,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                 <Box sx={{ mt: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                        <CalendarMonthIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                        <CalendarMonthIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                         <Typography variant="body2" sx={{ fontWeight: 500 }}>Date Range</Typography>
                                     </Box>
                                     <DateRangePicker
@@ -371,7 +371,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                 <Box sx={{ mt: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                        <PublicIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                        <PublicIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                         <Typography variant="body2" sx={{ fontWeight: 500 }}>Region</Typography>
                                     </Box>
                                     <FormControl fullWidth size="small">
@@ -390,7 +390,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                 <Box sx={{ mt: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                        <InventoryIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                        <InventoryIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                         <Typography variant="body2" sx={{ fontWeight: 500 }}>Product</Typography>
                                     </Box>
                                     <FormControl fullWidth size="small">
@@ -409,7 +409,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                 <Box sx={{ mt: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                        <BusinessIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                        <BusinessIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                         <Typography variant="body2" sx={{ fontWeight: 500 }}>Customer</Typography>
                                     </Box>
                                     <Autocomplete
@@ -463,7 +463,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             <Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <TuneIcon sx={{ mr: 1, color: 'primary.main' }} />
+                                        <TuneIcon sx={{ mr: 1, color: '#1e3a8a' }} />
                                         <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Filters</Typography>
                                     </Box>
                                     <Stack direction="row" spacing={1}>
@@ -492,7 +492,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 <Grid container spacing={2} alignItems="flex-end">
                                     <Grid item xs={12} md={4}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                            <CalendarMonthIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                            <CalendarMonthIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>Date Range</Typography>
                                         </Box>
                                         <DateRangePicker
@@ -511,7 +511,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                     <Grid item xs={12} md={2}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                            <PublicIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                            <PublicIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>Region</Typography>
                                         </Box>
                                         <FormControl fullWidth size="small">
@@ -529,7 +529,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                     <Grid item xs={12} md={3}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                            <InventoryIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                            <InventoryIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>Product</Typography>
                                         </Box>
                                         <FormControl fullWidth size="small">
@@ -548,7 +548,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                                     <Grid item xs={12} md={3}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                            <BusinessIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+                                            <BusinessIcon sx={{ mr: 1, color: '#1e3a8a', fontSize: 20 }} />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>Customer</Typography>
                                         </Box>
                                         <Autocomplete

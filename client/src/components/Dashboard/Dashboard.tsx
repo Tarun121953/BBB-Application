@@ -78,7 +78,7 @@ interface DashboardMetrics {
   growth: string;
   conversionRate: string;
   averageSessionTime: string;
-  
+
   // New metrics
   totalBillingsMTD: number;
   totalBillingsYTD: number;
@@ -90,22 +90,22 @@ interface DashboardMetrics {
   totalBacklogYTD: number;
   bookToBillRatioMTD: number;
   bookToBillRatioYTD: number;
-  
-  
-  
+
+
+
   // Additional metrics
   totalBookings: number;
   totalBookingAmount: number;
   totalBillings: number;
   totalBillingAmount: number;
   totalBacklogs: number;
-  
+
   // Month-over-month percentage changes
   totalBookingsChange: number;
   totalBillingsChange: number;
   totalBacklogAmountChange: number;
   bookToBillRatioChange: number;
-  
+
   // Current month counts and changes
   currentMonthBookingsCount: number;
   currentMonthBillingsCount: number;
@@ -143,7 +143,7 @@ const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<FilterState>({ 
+  const [filters, setFilters] = useState<FilterState>({
     dateRange: [null, null],
     region: '',
     product: '',
@@ -155,12 +155,12 @@ const Dashboard: React.FC = () => {
   const [regionwiseBcklogs, setRegionwiseBcklogs] = useState<any[]>([]);
   const [productDistribution, setProductDistribution] = useState<any[]>([]);
   const [drillDownSummaryData, setDrillDownSummaryData] = useState<any[]>([]);
-  
+
   // State for drill-down navigation
   const [currentView, setCurrentView] = useState<'regions' | 'customers'>('regions');
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
-  const [breadcrumbs, setBreadcrumbs] = useState<{label: string, view: 'regions' | 'customers', region?: string}[]>(
-    [{label: 'Regions', view: 'regions'}]
+  const [breadcrumbs, setBreadcrumbs] = useState<{ label: string, view: 'regions' | 'customers', region?: string }[]>(
+    [{ label: 'Regions', view: 'regions' }]
   );
   // Create a theme instance with light mode
   const theme = createTheme({
@@ -263,13 +263,13 @@ const Dashboard: React.FC = () => {
     fetchRegionwiseBcklogs();
     fetchProductDistribution();
     fetchDrillDownSummary();
-  }, [filters]); 
+  }, [filters]);
   // Add filters as dependency to re-fetch when filters change
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setAnimationReady(false);
-      
+
       // Prepare filters for API request
       const requestFilters = {
         startDate: filters.dateRange[0] ? filters.dateRange[0].toISOString() : null,
@@ -279,14 +279,14 @@ const Dashboard: React.FC = () => {
         customer: filters.customer || null
       };
       // Determine API base URL based on environment
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://bbb-application.onrender.com' 
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://bbb-application.onrender.com'
         : 'http://localhost:4901';
-      
+
       // Send request with axios including filters
       const response = await axios.post(`${baseUrl}/api/dashboard/summaryData`, requestFilters);
-      console.log("response",response.data.data);
-      
+      console.log("response", response.data.data);
+
       if (response.status === 200 && response.data && response.data.data) {
         setDashboardData(response.data.data);
         setError(null);
@@ -309,7 +309,7 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       setAnimationReady(false);
-      
+
       // Prepare filters for API request
       const requestFilters = {
         startDate: filters.dateRange[0] ? filters.dateRange[0].toISOString() : null,
@@ -318,17 +318,17 @@ const Dashboard: React.FC = () => {
         product: filters.product || null,
         customer: filters.customer || null
       };
-      console.log("requestFilters",requestFilters);
-      
+      console.log("requestFilters", requestFilters);
+
       // Determine API base URL based on environment
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://bbb-application.onrender.com' 
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://bbb-application.onrender.com'
         : 'http://localhost:4901';
-        
+
       // Send request with axios including filters
       const response = await axios.post(`${baseUrl}/api/dashboard/get/mnthly/Trnd/bllVsBkngs`, requestFilters);
-      console.log("response",response.data.data)
-      
+      console.log("response", response.data.data)
+
       if (response.status === 200 && response.data && response.data.data && response.data.data.monthlyTrend) {
         setMonthlyTrndBllVsBkngsData(response.data.data.monthlyTrend);
         setError(null);
@@ -351,7 +351,7 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       setAnimationReady(false);
-      
+
       // Prepare filters for API request
       const requestFilters = {
         startDate: filters.dateRange[0] ? filters.dateRange[0].toISOString() : null,
@@ -362,13 +362,13 @@ const Dashboard: React.FC = () => {
       };
       // Send request with axios including filters
       // Determine API base URL based on environment
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://bbb-application.onrender.com' 
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://bbb-application.onrender.com'
         : 'http://localhost:4901';
-        
+
       const response = await axios.post(`${baseUrl}/api/dashboard/get/backlogByRegion`, requestFilters);
-      console.log("respofetchRegionwiseBcklogs",response.data.data.backlogByRegion)
-      
+      console.log("respofetchRegionwiseBcklogs", response.data.data.backlogByRegion)
+
       if (response.status === 200 && response.data && response.data.data && response.data.data.backlogByRegion) {
         setRegionwiseBcklogs(response.data.data.backlogByRegion);
         setError(null);
@@ -391,7 +391,7 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       setAnimationReady(false);
-      
+
       // Prepare filters for API request
       const requestFilters = {
         startDate: filters.dateRange[0] ? filters.dateRange[0].toISOString() : null,
@@ -402,16 +402,16 @@ const Dashboard: React.FC = () => {
       };
       // Send request with axios including filters
       // Determine API base URL based on environment
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://bbb-application.onrender.com' 
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://bbb-application.onrender.com'
         : 'http://localhost:4901';
-        
+
       const response = await axios.post(`${baseUrl}/api/dashboard/get/productDistribution`, requestFilters);
-      console.log("respofetchProductDistribution",response.data.data.productDistribution)
-      
+      console.log("respofetchProductDistribution", response.data.data.productDistribution)
+
       if (response.status === 200 && response.data && response.data.data && response.data.data.productDistribution) {
         setProductDistribution(response.data.data.productDistribution);
-        console.log("setProductDistribution",response.data.data.productDistribution)
+        console.log("setProductDistribution", response.data.data.productDistribution)
         setError(null);
       } else {
         setError('Invalid product distribution data received from server. Please try again later.');
@@ -431,7 +431,7 @@ const Dashboard: React.FC = () => {
   const fetchDrillDownSummary = async () => {
     try {
       setLoading(true);
-      
+
       // Prepare filters for API request
       const requestFilters = {
         startDate: filters.dateRange[0] ? filters.dateRange[0].toISOString() : null,
@@ -440,25 +440,25 @@ const Dashboard: React.FC = () => {
         product: filters.product || null,
         customer: filters.customer || null
       };
-      
+
       // Send request with axios including filters
       // Determine API base URL based on environment
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://bbb-application.onrender.com' 
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://bbb-application.onrender.com'
         : 'http://localhost:4901';
-        
+
       const response = await axios.post(`${baseUrl}/api/dashboard/get/drillDownSummary`, requestFilters);
       console.log("fetchDrillDownSummary response", response.data.data.regionStats);
-      
+
       if (response.status === 200 && response.data && response.data.data && response.data.data.regionStats) {
         // Update state with the fetched data
         setDrillDownSummaryData(response.data.data.regionStats);
-        
+
         // Reset drill-down navigation when filters change
         setCurrentView('regions');
         setSelectedRegion(null);
-        setBreadcrumbs([{label: 'Regions', view: 'regions'}]);
-        
+        setBreadcrumbs([{ label: 'Regions', view: 'regions' }]);
+
         setError(null);
       } else {
         setError('Invalid drill-down summary data received from server. Please try again later.');
@@ -469,17 +469,17 @@ const Dashboard: React.FC = () => {
       console.error('Error fetching summary data:', err);
     }
   }
-  
+
   // Handle drill-down to customer view
   const handleDrillDown = (region: string) => {
     setSelectedRegion(region);
     setCurrentView('customers');
     setBreadcrumbs([
-      {label: 'Regions', view: 'regions'},
-      {label: region, view: 'customers', region}
+      { label: 'Regions', view: 'regions' },
+      { label: region, view: 'customers', region }
     ]);
   }
-  
+
   // Handle navigation via breadcrumbs
   const handleBreadcrumbClick = (index: number) => {
     const breadcrumb = breadcrumbs[index];
@@ -502,13 +502,13 @@ const Dashboard: React.FC = () => {
   const onExporting = (e: any) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Dashboard Data');
-    
+
     exportDataGrid({
       component: e.component,
       worksheet,
       autoFilterEnabled: true,
       customizeCell: ({ gridCell, excelCell }: any) => {
-        if(gridCell.column.dataType === 'number' && gridCell.column.format === 'currency') {
+        if (gridCell.column.dataType === 'number' && gridCell.column.format === 'currency') {
           excelCell.numFmt = '₹#,##0.00';
         }
       }
@@ -624,33 +624,33 @@ const Dashboard: React.FC = () => {
           >
             <ErrorOutlineIcon sx={{ fontSize: 40 }} />
           </Avatar>
-          
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              mb: 2, 
+
+          <Typography
+            variant="h4"
+            sx={{
+              mb: 2,
               color: 'error.main',
               fontWeight: 600
             }}
           >
             Oops! Something went wrong
           </Typography>
-          
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              mb: 3, 
+
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 3,
               color: 'text.secondary',
               lineHeight: 1.6
             }}
           >
             {error}
           </Typography>
-          
+
           <Box sx={{ mb: 4 }}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
+            <Typography
+              variant="body2"
+              sx={{
                 color: 'text.secondary',
                 mb: 1
               }}
@@ -665,7 +665,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-          
+
           <Button
             variant="contained"
             startIcon={<RefreshIcon />}
@@ -719,29 +719,29 @@ const Dashboard: React.FC = () => {
           >
             <DashboardIcon sx={{ fontSize: 40 }} />
           </Avatar>
-          
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              mb: 2, 
+
+          <Typography
+            variant="h4"
+            sx={{
+              mb: 2,
               color: 'text.primary',
               fontWeight: 600
             }}
           >
             No Data Available
           </Typography>
-          
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              mb: 4, 
+
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 4,
               color: 'text.secondary',
               lineHeight: 1.6
             }}
           >
             We couldn't find any dashboard data to display. This might be because:
           </Typography>
-          
+
           <Box sx={{ mb: 4 }}>
             <Box sx={{ textAlign: 'left', maxWidth: 400, mx: 'auto' }}>
               <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
@@ -755,7 +755,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-          
+
           <Button
             variant="contained"
             startIcon={<RefreshIcon />}
@@ -776,7 +776,7 @@ const Dashboard: React.FC = () => {
   }
 
 
- 
+
 
 
   // Custom shape for the bar chart
@@ -822,109 +822,6 @@ const Dashboard: React.FC = () => {
     );
   };
 
-  // Sample data for the drill-down summary table
-  const drillDownSummaryDataSample = [
-    {
-      id: 1,
-      customer: 'Acme Corporation',
-      region: 'North America',
-      product: 'Product A',
-      totalBookings: 1250000,
-      totalBillings: 980000,
-      backlog: 270000,
-      bookToBillRatio: 1.28
-    },
-    {
-      id: 2,
-      customer: 'Globex Industries',
-      region: 'Europe',
-      product: 'Product B',
-      totalBookings: 890000,
-      totalBillings: 820000,
-      backlog: 70000,
-      bookToBillRatio: 1.09
-    },
-    {
-      id: 3,
-      customer: 'Initech Systems',
-      region: 'Asia Pacific',
-      product: 'Product A',
-      totalBookings: 750000,
-      totalBillings: 620000,
-      backlog: 130000,
-      bookToBillRatio: 1.21
-    },
-    {
-      id: 4,
-      customer: 'Umbrella Corp',
-      region: 'North America',
-      product: 'Product C',
-      totalBookings: 1100000,
-      totalBillings: 950000,
-      backlog: 150000,
-      bookToBillRatio: 1.16
-    },
-    {
-      id: 5,
-      customer: 'Stark Industries',
-      region: 'Europe',
-      product: 'Product D',
-      totalBookings: 2100000,
-      totalBillings: 1800000,
-      backlog: 300000,
-      bookToBillRatio: 1.17
-    },
-    {
-      id: 6,
-      customer: 'Wayne Enterprises',
-      region: 'North America',
-      product: 'Product B',
-      totalBookings: 1650000,
-      totalBillings: 1450000,
-      backlog: 200000,
-      bookToBillRatio: 1.14
-    },
-    {
-      id: 7,
-      customer: 'Cyberdyne Systems',
-      region: 'Asia Pacific',
-      product: 'Product C',
-      totalBookings: 920000,
-      totalBillings: 750000,
-      backlog: 170000,
-      bookToBillRatio: 1.23
-    },
-    {
-      id: 8,
-      customer: 'Oscorp Industries',
-      region: 'Latin America',
-      product: 'Product A',
-      totalBookings: 580000,
-      totalBillings: 520000,
-      backlog: 60000,
-      bookToBillRatio: 1.12
-    },
-    {
-      id: 9,
-      customer: 'LexCorp',
-      region: 'Middle East',
-      product: 'Product D',
-      totalBookings: 430000,
-      totalBillings: 380000,
-      backlog: 50000,
-      bookToBillRatio: 1.13
-    },
-    {
-      id: 10,
-      customer: 'Massive Dynamic',
-      region: 'Africa',
-      product: 'Product B',
-      totalBookings: 320000,
-      totalBillings: 290000,
-      backlog: 30000,
-      bookToBillRatio: 1.10
-    }
-  ];
 
   // Function to format currency values
   const currencyFormatter = (data: any) => {
@@ -949,7 +846,7 @@ const Dashboard: React.FC = () => {
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6">Drill-Down Summary</Typography>
-          
+
         </Box>
         <Box sx={{ width: '100%', height: 400 }}>
           <Skeleton variant="rectangular" width="100%" height="100%" />
@@ -979,7 +876,7 @@ const Dashboard: React.FC = () => {
           {/* Overview Section */}
           <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#333333' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
+              <Avatar sx={{ bgcolor: '#3e4c63', mr: 2 }}>
                 <DashboardIcon />
               </Avatar>
               <Typography variant="h1">Overview</Typography>
@@ -990,10 +887,10 @@ const Dashboard: React.FC = () => {
           {/* Metrics Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <Card 
-                sx={{ 
-                  borderRadius: 3, 
-                  boxShadow: '0 8px 16px rgba(63, 136, 197, 0.12)', 
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 8px 16px rgba(63, 136, 197, 0.12)',
                   overflow: 'hidden',
                   transition: 'transform 0.3s, box-shadow 0.3s',
                   '&:hover': {
@@ -1001,37 +898,38 @@ const Dashboard: React.FC = () => {
                     boxShadow: '0 12px 20px rgba(63, 136, 197, 0.18)'
                   },
                   position: 'relative',
-                  height: '100%'
+                  height: '100%',
+                  borderLeft: '4px solid #3f88c5'
                 }}
               >
-                <Box 
-                  sx={{ 
-                    position: 'absolute', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    height: '6px', 
-                    background: 'linear-gradient(90deg, #3f88c5 0%, #4dabf5 100%)' 
-                  }} 
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '6px',
+                    // background: 'linear-gradient(90deg, #3f88c5 0%, #4dabf5 100%)'
+                  }}
                 />
                 <CardContent sx={{ pt: 2, pb: 2, px: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                    <Typography 
-                      variant="subtitle1" 
-                      sx={{ 
-                        fontWeight: 500, 
-                        fontSize: '0.85rem', 
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
                         color: 'text.secondary',
                         letterSpacing: '0.1px'
                       }}
                     >
                       Total Billings
                     </Typography>
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: 'rgba(63, 136, 197, 0.1)', 
-                        width: 32, 
-                        height: 32 
+                    <Avatar
+                      sx={{
+                        bgcolor: 'rgba(63, 136, 197, 0.1)',
+                        width: 32,
+                        height: 32
                       }}
                     >
                       <PaidOutlinedIcon sx={{ color: '#3f88c5' }} />
@@ -1039,19 +937,19 @@ const Dashboard: React.FC = () => {
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                     <Box sx={{ flex: 1 }}>
-                      <Typography 
-                        variant="h1" 
-                        component="div" 
-                        sx={{ 
-                          mb: 0.5, 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="h1"
+                        component="div"
+                        sx={{
+                          mb: 0.5,
+                          fontWeight: 600,
                           fontSize: '1.6rem',
                           color: '#1a1a1a',
                           letterSpacing: '-0.5px'
                         }}
                       >
                         {animationReady && dashboardData ? (
-                          <CountUp 
+                          <CountUp
                             start={0}
                             end={dashboardData.metrics.totalBillings || 0}
                             duration={1.5}
@@ -1064,21 +962,21 @@ const Dashboard: React.FC = () => {
                         Billings
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ flex: 1, textAlign: 'right' }}>
-                      <Typography 
-                        variant="h2" 
-                        component="div" 
-                        sx={{ 
-                          mb: 0.5, 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="h2"
+                        component="div"
+                        sx={{
+                          mb: 0.5,
+                          fontWeight: 600,
                           fontSize: '1.3rem',
                           color: '#1a1a1a',
                           letterSpacing: '-0.5px'
                         }}
                       >
                         {animationReady && dashboardData ? (
-                          <CountUp 
+                          <CountUp
                             start={0}
                             end={dashboardData.metrics.totalBillingAmount || 0}
                             duration={1.5}
@@ -1094,13 +992,13 @@ const Dashboard: React.FC = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       MTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.totalBillingsMTD ? 
-                            dashboardData.metrics.totalBillingsMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          ₹{dashboardData.metrics.totalBillingsMTD ?
+                            dashboardData.metrics.totalBillingsMTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '₹0.00'}
@@ -1108,8 +1006,8 @@ const Dashboard: React.FC = () => {
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       YTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.totalBillingsYTD ? 
-                            dashboardData.metrics.totalBillingsYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          ₹{dashboardData.metrics.totalBillingsYTD ?
+                            dashboardData.metrics.totalBillingsYTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '₹0.00'}
@@ -1119,11 +1017,11 @@ const Dashboard: React.FC = () => {
                     {dashboardData && dashboardData.metrics.currentMonthBillingsChange !== undefined ? (
                       <>
                         {renderPercentageChange(`${dashboardData.metrics.currentMonthBillingsChange}%`, dashboardData.metrics.currentMonthBillingsChange >= 0)}
-                        <Typography 
-                          variant="subtitle2" 
-                          sx={{ 
-                            ml: 1, 
-                            color: 'text.secondary', 
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            ml: 1,
+                            color: 'text.secondary',
                             fontSize: '0.75rem',
                             fontWeight: 400
                           }}
@@ -1138,10 +1036,10 @@ const Dashboard: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <Card 
-                sx={{ 
-                  borderRadius: 3, 
-                  boxShadow: '0 8px 16px rgba(102, 187, 106, 0.12)', 
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 8px 16px rgba(102, 187, 106, 0.12)',
                   overflow: 'hidden',
                   transition: 'transform 0.3s, box-shadow 0.3s',
                   '&:hover': {
@@ -1149,37 +1047,38 @@ const Dashboard: React.FC = () => {
                     boxShadow: '0 12px 20px rgba(102, 187, 106, 0.18)'
                   },
                   position: 'relative',
-                  height: '100%'
+                  height: '100%',
+                  borderLeft: '4px solid #66bb6a'
                 }}
               >
-                <Box 
-                  sx={{ 
-                    position: 'absolute', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    height: '6px', 
-                    background: 'linear-gradient(90deg, #66bb6a 0%, #81c784 100%)' 
-                  }} 
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '6px',
+                    // background: 'linear-gradient(90deg, #66bb6a 0%, #81c784 100%)'
+                  }}
                 />
                 <CardContent sx={{ pt: 2, pb: 2, px: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                    <Typography 
-                      variant="subtitle1" 
-                      sx={{ 
-                        fontWeight: 500, 
-                        fontSize: '0.85rem', 
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
                         color: 'text.secondary',
                         letterSpacing: '0.1px'
                       }}
                     >
                       Total Bookings
                     </Typography>
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: 'rgba(102, 187, 106, 0.1)', 
-                        width: 32, 
-                        height: 32 
+                    <Avatar
+                      sx={{
+                        bgcolor: 'rgba(102, 187, 106, 0.1)',
+                        width: 32,
+                        height: 32
                       }}
                     >
                       <BookOnlineOutlinedIcon sx={{ color: '#66bb6a' }} />
@@ -1187,19 +1086,19 @@ const Dashboard: React.FC = () => {
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
                     <Box sx={{ flex: 1 }}>
-                      <Typography 
-                        variant="h1" 
-                        component="div" 
-                        sx={{ 
-                          mb: 0.5, 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="h1"
+                        component="div"
+                        sx={{
+                          mb: 0.5,
+                          fontWeight: 600,
                           fontSize: '1.6rem',
                           color: '#1a1a1a',
                           letterSpacing: '-0.5px'
                         }}
                       >
                         {animationReady && dashboardData ? (
-                          <CountUp 
+                          <CountUp
                             start={0}
                             end={dashboardData.metrics.totalBookings || 0}
                             duration={1.5}
@@ -1212,21 +1111,21 @@ const Dashboard: React.FC = () => {
                         Bookings
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ flex: 1, textAlign: 'right' }}>
-                      <Typography 
-                        variant="h2" 
-                        component="div" 
-                        sx={{ 
-                          mb: 0.5, 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="h2"
+                        component="div"
+                        sx={{
+                          mb: 0.5,
+                          fontWeight: 600,
                           fontSize: '1.3rem',
                           color: '#1a1a1a',
                           letterSpacing: '-0.5px'
                         }}
                       >
                         {animationReady && dashboardData ? (
-                          <CountUp 
+                          <CountUp
                             start={0}
                             end={dashboardData.metrics.totalBookingAmount || 0}
                             duration={1.5}
@@ -1242,13 +1141,13 @@ const Dashboard: React.FC = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       MTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.totalBookingsMTD ? 
-                            dashboardData.metrics.totalBookingsMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          ₹{dashboardData.metrics.totalBookingsMTD ?
+                            dashboardData.metrics.totalBookingsMTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '₹0.00'}
@@ -1256,8 +1155,8 @@ const Dashboard: React.FC = () => {
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       YTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.totalBookingsYTD ? 
-                            dashboardData.metrics.totalBookingsYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          ₹{dashboardData.metrics.totalBookingsYTD ?
+                            dashboardData.metrics.totalBookingsYTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '₹0.00'}
@@ -1267,11 +1166,11 @@ const Dashboard: React.FC = () => {
                     {dashboardData && dashboardData.metrics.currentMonthBookingsChange !== undefined ? (
                       <>
                         {renderPercentageChange(`${dashboardData.metrics.currentMonthBookingsChange}%`, dashboardData.metrics.currentMonthBookingsChange >= 0)}
-                        <Typography 
-                          variant="subtitle2" 
-                          sx={{ 
-                            ml: 1, 
-                            color: 'text.secondary', 
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            ml: 1,
+                            color: 'text.secondary',
                             fontSize: '0.75rem',
                             fontWeight: 400
                           }}
@@ -1286,10 +1185,10 @@ const Dashboard: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <Card 
-                sx={{ 
-                  borderRadius: 3, 
-                  boxShadow: '0 8px 16px rgba(255, 167, 38, 0.12)', 
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 8px 16px rgba(255, 167, 38, 0.12)',
                   overflow: 'hidden',
                   transition: 'transform 0.3s, box-shadow 0.3s',
                   '&:hover': {
@@ -1297,75 +1196,76 @@ const Dashboard: React.FC = () => {
                     boxShadow: '0 12px 20px rgba(255, 167, 38, 0.18)'
                   },
                   position: 'relative',
-                  height: '100%'
+                  height: '100%',
+                  borderLeft: '4px solid #ffa726'
                 }}
               >
-                <Box 
-                  sx={{ 
-                    position: 'absolute', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    height: '6px', 
-                    background: 'linear-gradient(90deg, #ffa726 0%, #ffb74d 100%)' 
-                  }} 
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '6px',
+                    // background: 'linear-gradient(90deg, #ffa726 0%, #ffb74d 100%)'
+                  }}
                 />
                 <CardContent sx={{ pt: 2, pb: 2, px: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                    <Typography 
-                      variant="subtitle1" 
-                      sx={{ 
-                        fontWeight: 500, 
-                        fontSize: '0.85rem', 
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
                         color: 'text.secondary',
                         letterSpacing: '0.1px'
                       }}
                     >
-                      Total Backlog Amount 
+                      Total Backlog Amount
                     </Typography>
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: 'rgba(255, 167, 38, 0.1)', 
-                        width: 32, 
-                        height: 32 
+                    <Avatar
+                      sx={{
+                        bgcolor: 'rgba(255, 167, 38, 0.1)',
+                        width: 32,
+                        height: 32
                       }}
                     >
                       <AssignmentOutlinedIcon sx={{ color: '#ffa726' }} />
                     </Avatar>
                   </Box>
-                  
-                  <Typography 
-                    variant="h1" 
-                    component="div" 
-                    sx={{ 
-                      mb: 1.5, 
-                      fontWeight: 600, 
+
+                  <Typography
+                    variant="h1"
+                    component="div"
+                    sx={{
+                      mb: 1.5,
+                      fontWeight: 600,
                       fontSize: '1.6rem',
                       color: '#1a1a1a',
                       letterSpacing: '-0.5px'
                     }}
                   >
                     {animationReady && dashboardData ? (
-                      <CountUp 
+                      <CountUp
                         start={0}
                         end={dashboardData.metrics.totalBacklogAmount || 0}
                         duration={1.5}
                         separator=","
-                            decimals={2}
-                            decimal="."
-                            prefix="₹"
+                        decimals={2}
+                        decimal="."
+                        prefix="₹"
                       />
                     ) : '₹0.00'}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-                        Amount
-                      </Typography>
+                    Amount
+                  </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       MTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.totalBacklogMTD ? 
-                            dashboardData.metrics.totalBacklogMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          ₹{dashboardData.metrics.totalBacklogMTD ?
+                            dashboardData.metrics.totalBacklogMTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '₹0.00'}
@@ -1373,8 +1273,8 @@ const Dashboard: React.FC = () => {
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       YTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          ₹{dashboardData.metrics.totalBacklogYTD ? 
-                            dashboardData.metrics.totalBacklogYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          ₹{dashboardData.metrics.totalBacklogYTD ?
+                            dashboardData.metrics.totalBacklogYTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '₹0.00'}
@@ -1382,11 +1282,11 @@ const Dashboard: React.FC = () => {
                   </Box>
                   <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center' }}>
                     {renderPercentageChange(`${dashboardData.metrics.currentMonthBacklogAmountChange}%`, dashboardData.metrics.currentMonthBacklogAmountChange >= 0)}
-                    <Typography 
-                      variant="subtitle2" 
-                      sx={{ 
-                        ml: 1, 
-                        color: 'text.secondary', 
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        ml: 1,
+                        color: 'text.secondary',
                         fontSize: '0.75rem',
                         fontWeight: 400
                       }}
@@ -1399,10 +1299,10 @@ const Dashboard: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <Card 
-                sx={{ 
-                  borderRadius: 3, 
-                  boxShadow: '0 8px 16px rgba(156, 39, 176, 0.12)', 
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 8px 16px rgba(156, 39, 176, 0.12)',
                   overflow: 'hidden',
                   transition: 'transform 0.3s, box-shadow 0.3s',
                   '&:hover': {
@@ -1410,55 +1310,56 @@ const Dashboard: React.FC = () => {
                     boxShadow: '0 12px 20px rgba(156, 39, 176, 0.18)'
                   },
                   position: 'relative',
-                  height: '100%'
+                  height: '100%',
+                  borderLeft: '4px solid #9c27b0'
                 }}
               >
-                <Box 
-                  sx={{ 
-                    position: 'absolute', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    height: '6px', 
-                    background: 'linear-gradient(90deg, #9c27b0 0%, #ba68c8 100%)' 
-                  }} 
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '6px',
+                    // background: 'linear-gradient(90deg, #9c27b0 0%, #ba68c8 100%)'
+                  }}
                 />
                 <CardContent sx={{ pt: 2, pb: 2, px: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                    <Typography 
-                      variant="subtitle1" 
-                      sx={{ 
-                        fontWeight: 500, 
-                        fontSize: '0.85rem', 
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
                         color: 'text.secondary',
                         letterSpacing: '0.1px'
                       }}
                     >
                       Book-to-Bill Ratio
                     </Typography>
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: 'rgba(156, 39, 176, 0.1)', 
-                        width: 32, 
-                        height: 32 
+                    <Avatar
+                      sx={{
+                        bgcolor: 'rgba(156, 39, 176, 0.1)',
+                        width: 32,
+                        height: 32
                       }}
                     >
                       <TrendingUpOutlinedIcon sx={{ color: '#9c27b0' }} />
                     </Avatar>
                   </Box>
-                  <Typography 
-                    variant="h1" 
-                    component="div" 
-                    sx={{ 
-                      mb: 1.5, 
-                      fontWeight: 600, 
+                  <Typography
+                    variant="h1"
+                    component="div"
+                    sx={{
+                      mb: 1.5,
+                      fontWeight: 600,
                       fontSize: '1.6rem',
                       color: '#1a1a1a',
                       letterSpacing: '-0.5px'
                     }}
                   >
                     {animationReady && dashboardData ? (
-                      <CountUp 
+                      <CountUp
                         start={0}
                         end={dashboardData.metrics.bookToBillRatio || 0}
                         duration={1.5}
@@ -1468,14 +1369,14 @@ const Dashboard: React.FC = () => {
                     ) : '0.00'}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-                        Ratio
-                      </Typography>
+                    Ratio
+                  </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       MTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          {dashboardData.metrics.bookToBillRatioMTD ? 
-                            dashboardData.metrics.bookToBillRatioMTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          {dashboardData.metrics.bookToBillRatioMTD ?
+                            dashboardData.metrics.bookToBillRatioMTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '0.00'}
@@ -1483,20 +1384,20 @@ const Dashboard: React.FC = () => {
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                       YTD: {animationReady && dashboardData ? (
                         <span style={{ fontWeight: 500, color: '#1a1a1a' }}>
-                          {dashboardData.metrics.bookToBillRatioYTD ? 
-                            dashboardData.metrics.bookToBillRatioYTD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 
+                          {dashboardData.metrics.bookToBillRatioYTD ?
+                            dashboardData.metrics.bookToBillRatioYTD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) :
                             '0.00'}
                         </span>
                       ) : '0.00'}
                     </Typography>
                   </Box>
                   <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center' }}>
-                      {renderPercentageChange(`${dashboardData.metrics.currentMonthBookToBillRatioChange}%`, dashboardData.metrics.currentMonthBookToBillRatioChange > 0)}
-                    <Typography 
-                      variant="subtitle2" 
-                      sx={{ 
-                        ml: 1, 
-                        color: 'text.secondary', 
+                    {renderPercentageChange(`${dashboardData.metrics.currentMonthBookToBillRatioChange}%`, dashboardData.metrics.currentMonthBookToBillRatioChange > 0)}
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        ml: 1,
+                        color: 'text.secondary',
                         fontSize: '0.75rem',
                         fontWeight: 400
                       }}
@@ -1515,15 +1416,15 @@ const Dashboard: React.FC = () => {
               <Paper sx={{ p: 3, height: '100%', bgcolor: 'background.default' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ bgcolor: 'info.main', mr: 2 }}>
+                    <Avatar sx={{ bgcolor: '#3e4c63', mr: 2 }}>
                       <TimelineIcon />
                     </Avatar>
                     <Typography variant="h6">Monthly Trend: Bookings vs Billings</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: '100%', height: 400 , overflowX:'auto'}}>
+                <Box sx={{ width: '100%', height: 400, overflowX: 'auto' }}>
                   {monthlyTrndBllVsBkngsData && monthlyTrndBllVsBkngsData.length > 0 ? (
-                    <ResponsiveContainer minWidth={500} width="100%" height="95%">
+                    <ResponsiveContainer minWidth={500} width="100%" height="100%">
                       <LineChart
                         data={monthlyTrndBllVsBkngsData}
                         margin={{
@@ -1536,12 +1437,12 @@ const Dashboard: React.FC = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name, props) => {
                             const countKey = name === 'Bookings' ? 'BookingsCount' : 'BillingsCount';
                             const count = props.payload && props.payload[countKey] ? props.payload[countKey] : 0;
                             return [`₹${Number(value).toLocaleString()} (Count: ${count})`, name];
-                          }} 
+                          }}
                         />
                         <Legend />
                         <Line
@@ -1560,12 +1461,12 @@ const Dashboard: React.FC = () => {
                       </LineChart>
                     </ResponsiveContainer>
                   ) : (
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         height: '100%',
                         color: 'text.secondary'
                       }}
@@ -1588,13 +1489,13 @@ const Dashboard: React.FC = () => {
               <Paper sx={{ p: 3, height: '100%', bgcolor: 'background.default' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ bgcolor: 'info.main', mr: 2 }}>
+                    <Avatar sx={{ bgcolor: '#3e4c63', mr: 2 }}>
                       <BarChartIcon />
                     </Avatar>
                     <Typography variant="h6">Backlog by Region</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: '100%', height: 300 , overflowX:'auto'}}>
+                <Box sx={{ width: '100%', height: 300, overflowX: 'auto' }}>
                   {regionwiseBcklogs && regionwiseBcklogs.length > 0 ? (
                     <ResponsiveContainer minWidth={400} width="100%" height="100%">
                       <BarChart
@@ -1609,11 +1510,11 @@ const Dashboard: React.FC = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name, props) => {
                             const count = props.payload && props.payload.count ? props.payload.count : 0;
                             return [`₹${Number(value).toLocaleString()} (Count: ${count})`, 'Backlog'];
-                          }} 
+                          }}
                         />
                         <Bar
                           dataKey="value"
@@ -1627,12 +1528,12 @@ const Dashboard: React.FC = () => {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         height: '100%',
                         color: 'text.secondary'
                       }}
@@ -1654,13 +1555,13 @@ const Dashboard: React.FC = () => {
               <Paper sx={{ p: 3, height: '100%', bgcolor: 'background.default' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ bgcolor: 'info.main', mr: 2 }}>
+                    <Avatar sx={{ bgcolor: '#3e4c63', mr: 2 }}>
                       <PieChartIcon />
                     </Avatar>
                     <Typography variant="h6">Product Booking Distribution</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: '100%', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Box sx={{ width: '100%', height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   {productDistribution && productDistribution.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -1682,12 +1583,12 @@ const Dashboard: React.FC = () => {
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         height: '100%',
                         color: 'text.secondary'
                       }}
@@ -1721,16 +1622,16 @@ const Dashboard: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.12)'
                 }
               }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: { xs: 'block', sm: 'flex' }, alignItems: 'center', justifyContent: 'space-between' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
+                    <Avatar sx={{ bgcolor: '#3e4c63', mr: 2 }}>
                       <EqualizerIcon />
                     </Avatar>
                     <Typography variant="h5" component="h2" sx={{ fontWeight: 500 }}>
                       Detailed Data Analysis
                     </Typography>
                   </Box>
-                  
+
                   {/* Breadcrumb Navigation */}
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     {breadcrumbs.map((crumb, index) => (
@@ -1740,8 +1641,8 @@ const Dashboard: React.FC = () => {
                             /
                           </Typography>
                         )}
-                        <Typography 
-                          variant="body2" 
+                        <Typography
+                          variant="body2"
                           sx={{
                             fontWeight: index === breadcrumbs.length - 1 ? 600 : 400,
                             color: index === breadcrumbs.length - 1 ? 'primary.main' : 'text.primary',
@@ -1756,23 +1657,23 @@ const Dashboard: React.FC = () => {
                         </Typography>
                       </React.Fragment>
                     ))}
-                    
+
                     {/* Back Button - Only show when in customer view */}
                     {currentView === 'customers' && (
-                      <Button 
-                        variant="contained" 
-                        color="primary" 
-                        size="small" 
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
                         startIcon={<ArrowBackIcon />}
                         onClick={() => handleBreadcrumbClick(0)}
-                        sx={{ ml: 2 }}
+                        sx={{ ml: { xs: 'auto', sm: 2 } }}
                       >
-                        Back to Regions
+                        Back
                       </Button>
                     )}
                   </Box>
                 </Box>
-                
+
                 <Box sx={{ mt: 2 }}>
                   {currentView === 'regions' ? (
                     <DataGrid
@@ -1797,11 +1698,11 @@ const Dashboard: React.FC = () => {
                       <Column type="buttons" width={70} caption="S.No." cellRender={(cellData) => {
                         return <span>{cellData.rowIndex + 1}</span>;
                       }} />
-                      <Column 
-                        dataField="region" 
-                        caption="Region" 
+                      <Column
+                        dataField="region"
+                        caption="Region"
                         cellRender={(cell) => (
-                          <span 
+                          <span
                             style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
                             onClick={() => {
                               if (cell.value) {
@@ -1811,25 +1712,25 @@ const Dashboard: React.FC = () => {
                           >
                             {cell.value}
                           </span>
-                        )} 
+                        )}
                       />
-                      <Column 
-                        dataField="bookingCustomersCount" 
-                        caption="Booking Customers" 
+                      <Column
+                        dataField="bookingCustomersCount"
+                        caption="Booking Customers"
                         dataType="number"
                         alignment="right"
                         allowFiltering={false}
                       />
-                      <Column 
-                        dataField="billingCustomersCount" 
-                        caption="Billing Customers" 
+                      <Column
+                        dataField="billingCustomersCount"
+                        caption="Billing Customers"
                         dataType="number"
                         alignment="right"
                         allowFiltering={false}
                       />
-                      <Column 
-                        dataField="backlogCustomersCount" 
-                        caption="Backlog Customers" 
+                      <Column
+                        dataField="backlogCustomersCount"
+                        caption="Backlog Customers"
                         dataType="number"
                         alignment="right"
                         allowFiltering={false}
@@ -1849,7 +1750,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>₹{cell.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         )}
                       />
                       <Column
@@ -1867,7 +1768,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>₹{cell.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         )}
                       />
                       <Column
@@ -1884,7 +1785,7 @@ const Dashboard: React.FC = () => {
                         format="currency"
                         alignment="right"
                         cellRender={(cell) => (
-                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>₹{cell.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         )}
                       />
                       <Column
@@ -1893,7 +1794,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         alignment="right"
                         cellRender={(cell) => (
-                          <span style={{ 
+                          <span style={{
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
                             padding: '2px 6px',
                             borderRadius: '4px',
@@ -1910,7 +1811,7 @@ const Dashboard: React.FC = () => {
                         dataType="number"
                         alignment="right"
                         cellRender={(cell) => (
-                          <span style={{ 
+                          <span style={{
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
                             padding: '2px 6px',
                             borderRadius: '4px',
@@ -2016,7 +1917,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>₹{cell.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         )}
                       />
                       <Column
@@ -2034,7 +1935,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>₹{cell.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         )}
                       />
                       <Column
@@ -2052,7 +1953,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span>₹{cell.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>₹{cell.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         )}
                       />
                       <Column
@@ -2062,7 +1963,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span style={{ 
+                          <span style={{
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
                             padding: '2px 6px',
                             borderRadius: '4px',
@@ -2080,7 +1981,7 @@ const Dashboard: React.FC = () => {
                         alignment="right"
                         allowFiltering={false}
                         cellRender={(cell) => (
-                          <span style={{ 
+                          <span style={{
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
                             padding: '2px 6px',
                             borderRadius: '4px',
