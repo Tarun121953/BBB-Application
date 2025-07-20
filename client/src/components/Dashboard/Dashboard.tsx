@@ -142,6 +142,7 @@ interface FilterState {
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: [null, null],
@@ -258,16 +259,25 @@ const Dashboard: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchDashboardData();
-    fetchMonthlyTrndBllVsBkngsData();
-    fetchRegionwiseBcklogs();
-    fetchProductDistribution();
-    fetchDrillDownSummary();
+    // Execute all API calls and wait for all to complete
+    Promise.all([
+      fetchDashboardData(),
+      fetchMonthlyTrndBllVsBkngsData(),
+      fetchRegionwiseBcklogs(),
+      fetchProductDistribution(),
+      fetchDrillDownSummary()
+    ]).finally(() => {
+      // Set initial loading to false only after all API calls complete
+      setInitialLoading(false);
+      // Delay setting animation ready to ensure smooth transition
+      setTimeout(() => {
+        setAnimationReady(true);
+      }, 300);
+    });
   }, [filters]);
   // Add filters as dependency to re-fetch when filters change
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
       setAnimationReady(false);
 
       // Prepare filters for API request
@@ -467,6 +477,8 @@ const Dashboard: React.FC = () => {
     } catch (err) {
       setError('Failed to fetch summary data. Please try again later.');
       console.error('Error fetching summary data:', err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -685,6 +697,58 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  // Show loader during initial load
+  if (initialLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+          p: 3
+        }}
+      >
+        <Paper
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            maxWidth: 600,
+            width: '100%',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}
+        >
+          <CircularProgress size={64} sx={{ mb: 3, color: 'primary.main' }} />
+          
+          <Typography
+            variant="h4"
+            sx={{
+              mb: 2,
+              color: 'text.primary',
+              fontWeight: 600
+            }}
+          >
+            Loading Dashboard...
+          </Typography>
+          
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'text.secondary',
+              lineHeight: 1.6
+            }}
+          >
+            Please wait while we fetch your dashboard data.
+          </Typography>
+        </Paper>
+      </Box>
+    );
+  }
+
+  // Show no data message only when not loading and no data exists
   if (!dashboardData) {
     return (
       <Box
@@ -1675,7 +1739,47 @@ const Dashboard: React.FC = () => {
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                  {currentView === 'regions' ? (
+                  {loading ? (
+                    // Show loader while API is being called
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: 400,
+                        color: 'text.secondary'
+                      }}
+                    >
+                      <CircularProgress size={48} sx={{ mb: 2 }} />
+                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
+                        Loading Data...
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                        Please wait while we fetch the drill-down summary data.
+                      </Typography>
+                    </Box>
+                  ) : drillDownSummaryData.length === 0 ? (
+                    // Show no data message only when not loading and no data exists
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: 400,
+                        color: 'text.secondary'
+                      }}
+                    >
+                      <EqualizerIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
+                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
+                        No Data Available
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                        No drill-down summary data found for the selected filters. Try adjusting your filter criteria.
+                      </Typography>
+                    </Box>
+                  ) : currentView === 'regions' ? (
                     <DataGrid
                       dataSource={drillDownSummaryData}
                       showBorders={true}
