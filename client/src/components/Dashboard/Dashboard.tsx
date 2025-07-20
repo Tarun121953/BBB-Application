@@ -98,6 +98,7 @@ interface DashboardMetrics {
   totalBookingAmount: number;
   totalBillings: number;
   totalBillingAmount: number;
+  totalBacklogs: number;
   
   // Month-over-month percentage changes
   totalBookingsChange: number;
@@ -410,6 +411,7 @@ const Dashboard: React.FC = () => {
       
       if (response.status === 200 && response.data && response.data.data && response.data.data.productDistribution) {
         setProductDistribution(response.data.data.productDistribution);
+        console.log("setProductDistribution",response.data.data.productDistribution)
         setError(null);
       } else {
         setError('Invalid product distribution data received from server. Please try again later.');
@@ -1319,7 +1321,7 @@ const Dashboard: React.FC = () => {
                         letterSpacing: '0.1px'
                       }}
                     >
-                      Total Backlog Amount
+                      Total Backlog Amount 
                     </Typography>
                     <Avatar 
                       sx={{ 
@@ -1520,36 +1522,63 @@ const Dashboard: React.FC = () => {
                   </Box>
                 </Box>
                 <Box sx={{ width: '100%', height: 400 , overflowX:'auto'}}>
-                  <ResponsiveContainer minWidth={500} width="100%" height="95%">
-                    <LineChart
-                      data={monthlyTrndBllVsBkngsData}
-                      margin={{
-                        top: 5,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
+                  {monthlyTrndBllVsBkngsData && monthlyTrndBllVsBkngsData.length > 0 ? (
+                    <ResponsiveContainer minWidth={500} width="100%" height="95%">
+                      <LineChart
+                        data={monthlyTrndBllVsBkngsData}
+                        margin={{
+                          top: 5,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
+                        <Tooltip 
+                          formatter={(value, name, props) => {
+                            const countKey = name === 'Bookings' ? 'BookingsCount' : 'BillingsCount';
+                            const count = props.payload && props.payload[countKey] ? props.payload[countKey] : 0;
+                            return [`₹${Number(value).toLocaleString()} (Count: ${count})`, name];
+                          }} 
+                        />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="Bookings"
+                          stroke="#8884d8"
+                          strokeWidth={2}
+                          activeDot={{ r: 8 }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Billings"
+                          stroke="#82ca9d"
+                          strokeWidth={2}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        height: '100%',
+                        color: 'text.secondary'
                       }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
-                      <Tooltip formatter={(value, name) => [`₹${Number(value).toLocaleString()}`, name]} />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="Bookings"
-                        stroke="#8884d8"
-                        strokeWidth={2}
-                        activeDot={{ r: 8 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="Billings"
-                        stroke="#82ca9d"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                      <TimelineIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
+                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
+                        No Data Available
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                        No monthly trend data found for the selected filters. Try adjusting your date range or filter criteria.
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
             </Grid>
@@ -1566,31 +1595,57 @@ const Dashboard: React.FC = () => {
                   </Box>
                 </Box>
                 <Box sx={{ width: '100%', height: 300 , overflowX:'auto'}}>
-                  <ResponsiveContainer minWidth={400} width="100%" height="100%">
-                    <BarChart
-                      data={regionwiseBcklogs}
-                      margin={{
-                        top: 20,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
+                  {regionwiseBcklogs && regionwiseBcklogs.length > 0 ? (
+                    <ResponsiveContainer minWidth={400} width="100%" height="100%">
+                      <BarChart
+                        data={regionwiseBcklogs}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
+                        <Tooltip 
+                          formatter={(value, name, props) => {
+                            const count = props.payload && props.payload.count ? props.payload.count : 0;
+                            return [`₹${Number(value).toLocaleString()} (Count: ${count})`, 'Backlog'];
+                          }} 
+                        />
+                        <Bar
+                          dataKey="value"
+                          name="Backlog Value"
+                          shape={<CustomBar />}
+                        >
+                          {regionwiseBcklogs.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        height: '100%',
+                        color: 'text.secondary'
                       }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
-                      <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Backlog']} />
-                      <Bar
-                        dataKey="value"
-                        name="Backlog Value"
-                        shape={<CustomBar />}
-                      >
-                        {regionwiseBcklogs.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                      <BarChartIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
+                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
+                        No Regional Data
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                        No backlog data available by region for the selected filters. Please check your filter settings.
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
             </Grid>
@@ -1602,29 +1657,50 @@ const Dashboard: React.FC = () => {
                     <Avatar sx={{ bgcolor: 'info.main', mr: 2 }}>
                       <PieChartIcon />
                     </Avatar>
-                    <Typography variant="h6">Product Distribution</Typography>
+                    <Typography variant="h6">Product Booking Distribution</Typography>
                   </Box>
                 </Box>
                 <Box sx={{ width: '100%', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={productDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={renderCustomizedLabel}
-                        outerRadius={140}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {productDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Market Share']} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  {productDistribution && productDistribution.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={productDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={renderCustomizedLabel}
+                          outerRadius={140}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {productDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Market Share']} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        height: '100%',
+                        color: 'text.secondary'
+                      }}
+                    >
+                      <PieChartIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
+                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
+                        No Product Data
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 300 }}>
+                        No product distribution data available for the selected filters. Try adjusting your filter criteria.
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
             </Grid>
@@ -1707,11 +1783,7 @@ const Dashboard: React.FC = () => {
                       allowColumnReordering={true}
                       className="colored-header-grid"
                       onExporting={onExporting}
-                      onRowClick={(e) => {
-                        if (e.data && e.data.region) {
-                          handleDrillDown(e.data.region);
-                        }
-                      }}
+
                     >
                       <Scrolling columnRenderingMode="virtual" />
                       <ColumnChooser enabled={true} />
@@ -1729,7 +1801,14 @@ const Dashboard: React.FC = () => {
                         dataField="region" 
                         caption="Region" 
                         cellRender={(cell) => (
-                          <span style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}>
+                          <span 
+                            style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
+                            onClick={() => {
+                              if (cell.value) {
+                                handleDrillDown(cell.value);
+                              }
+                            }}
+                          >
                             {cell.value}
                           </span>
                         )} 

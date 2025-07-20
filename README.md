@@ -228,10 +228,7 @@ npm install
 5. Start the server:
 ```bash
 # Development mode
-npm run dev
-
-# Production mode
-npm start
+nodemon server.js
 ```
 
 The server will run on `http://localhost:4901`

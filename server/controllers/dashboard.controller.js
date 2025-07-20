@@ -297,9 +297,10 @@ exports.getDashboardDataCtrl = async (req, res) => {
     const totalBookingAmount = filteredBookings.reduce((sum, item) => sum + (item.Booking_Amount || 0), 0);
     const totalBillingAmount = filteredBillings.reduce((sum, item) => sum + (item.Billed_Amount || 0), 0);
     
-    // Calculate total number of bookings and billings (count)
+    // Calculate total number of bookings, billings, and backlogs (count)
     const totalBookings = filteredBookings.length;
     const totalBillings = filteredBillings.length;
+    const totalBacklogs = filteredBacklog.length;
     
     // Calculate book-to-bill ratio
     const bookToBillRatio = totalBookings > 0 ? totalBookings / totalBillings : 0;
@@ -344,6 +345,7 @@ exports.getDashboardDataCtrl = async (req, res) => {
         totalBookingsChange: parseFloat(totalBookingsChange.toFixed(2)),
         totalBillings: totalBillings,
         totalBillingsChange: parseFloat(totalBillingsChange.toFixed(2)),
+        totalBacklogs: totalBacklogs,
         // Current month counts and changes
         currentMonthBookingsCount: currentAndPreviousMonthData.currentMonthBookingsCount,
         currentMonthBillingsCount: currentAndPreviousMonthData.currentMonthBillingsCount,
@@ -453,6 +455,8 @@ exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
         name: monthName,
         Bookings: 0,
         Billings: 0,
+        BookingsCount: 0,
+        BillingsCount: 0,
         monthYear: monthYear // Keep this for sorting
       };
     }
@@ -465,6 +469,7 @@ exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
       // Only add to monthlyData if it's within our 12-month window
       if (monthlyData[monthYear]) {
         monthlyData[monthYear].Bookings += booking.Booking_Amount || 0;
+        monthlyData[monthYear].BookingsCount += 1;
       }
     });
     
@@ -476,6 +481,7 @@ exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
       // Only add to monthlyData if it's within our 12-month window
       if (monthlyData[monthYear]) {
         monthlyData[monthYear].Billings += billing.Billed_Amount || 0;
+        monthlyData[monthYear].BillingsCount += 1;
       }
     });
     
@@ -493,7 +499,9 @@ exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
       return {
         ...rest,
         Bookings: parseFloat(rest.Bookings.toFixed(2)),
-        Billings: parseFloat(rest.Billings.toFixed(2))
+        Billings: parseFloat(rest.Billings.toFixed(2)),
+        BookingsCount: rest.BookingsCount,
+        BillingsCount: rest.BillingsCount
       };
     });
     
@@ -555,18 +563,21 @@ exports.getBacklogByRegionCtrl = async (req, res) => {
         backlogByRegion[region] = {
           name: region,
           value: 0,
+          count: 0,
           fill: regionColors[region] || '#ffc658' // Default color if region not in predefined list
         };
       }
       
       backlogByRegion[region].value += item.Backlog_Amount || 0;
+      backlogByRegion[region].count += 1;
     });
     
     // Convert to array and round values to 2 decimal places
     const backlogByRegionData = Object.values(backlogByRegion).map(item => {
       return {
         ...item,
-        value: parseFloat(item.value.toFixed(2))
+        value: parseFloat(item.value.toFixed(2)),
+        count: item.count
       };
     });
     
