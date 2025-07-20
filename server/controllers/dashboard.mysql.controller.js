@@ -36,7 +36,7 @@ const safeParseFloat = (value) => {
  *  error: Error message if the data was not retrieved successfully
  *******************************************************************/
 exports.getDashboardDataCtrl = async (req, res) => {
-  console.log('getDashboardDataCtrl (MySQL)');
+  // console.log('getDashboardDataCtrl (MySQL)');
   try {
     const filters = {
       startDate: req.body.startDate || null,
@@ -76,7 +76,7 @@ exports.getDashboardDataCtrl = async (req, res) => {
       
       // Get current month data
       const currentMonthBookingsCount = await BookingsModel.getCount(currentMonthFilters);
-      console.log('currentMonthBookingsCount', currentMonthBookingsCount);
+      // console.log('currentMonthBookingsCount', currentMonthBookingsCount);
       const currentMonthBillingsCount = await BillingsModel.getCount(currentMonthFilters);
       const currentMonthBacklogAmount = await BacklogModel.getSum(currentMonthFilters);
       const currentMonthBookToBillRatio = currentMonthBookingsCount > 0 ? currentMonthBookingsCount / currentMonthBillingsCount : 0;
@@ -220,7 +220,7 @@ exports.getDashboardDataCtrl = async (req, res) => {
       data: dashboardData
     });
   } catch (error) {
-    console.error('Dashboard data error:', error);
+    // console.error('Dashboard data error:', error);
     res.status(500).json({
       success: false,
       message: "Error retrieving dashboard data",
@@ -238,7 +238,7 @@ exports.getDashboardDataCtrl = async (req, res) => {
  *  error: Error message if the data was not retrieved successfully
  *******************************************************************/
 exports.getFilterDataCtrl = async (req, res) => {
-  console.log('getFilterDataCtrl (MySQL)');
+  // console.log('getFilterDataCtrl (MySQL)');
   try {
     const regions = await BookingsModel.getUniqueRegions();
     const products = await BookingsModel.getUniqueProducts();
@@ -253,7 +253,7 @@ exports.getFilterDataCtrl = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Filter data error:', error);
+    // console.error('Filter data error:', error);
     res.status(500).json({
       success: false,
       message: "Error retrieving filter data",
@@ -271,7 +271,7 @@ exports.getFilterDataCtrl = async (req, res) => {
  *  error: Error message if the data was not retrieved successfully
  *******************************************************************/
 exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
-  console.log('getMonthlyTrndBllVsBkngsCtrl (MySQL)');
+  // console.log('getMonthlyTrndBllVsBkngsCtrl (MySQL)');
   try {
     const filters = {
       startDate: req.body.startDate || null,
@@ -293,7 +293,7 @@ exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Monthly trend data error:', error);
+    // console.error('Monthly trend data error:', error);
     res.status(500).json({
       success: false,
       message: "Error retrieving monthly trend data",
@@ -311,7 +311,7 @@ exports.getMonthlyTrndBllVsBkngsCtrl = async (req, res) => {
  *  error: Error message if the data was not retrieved successfully
  *******************************************************************/
 exports.getBacklogByRegionCtrl = async (req, res) => {
-  console.log('getBacklogByRegionCtrl (MySQL)');
+  // console.log('getBacklogByRegionCtrl (MySQL)');
   try {
     const filters = {
       startDate: req.body.startDate || null,
@@ -348,7 +348,7 @@ exports.getBacklogByRegionCtrl = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Backlog by region data error:', error);
+    // console.error('Backlog by region data error:', error);
     res.status(500).json({
       success: false,
       message: "Error retrieving backlog by region data",
@@ -366,7 +366,7 @@ exports.getBacklogByRegionCtrl = async (req, res) => {
  *  error: Error message if the data was not retrieved successfully
  *******************************************************************/
 exports.getProductDistributionCtrl = async (req, res) => {
-  console.log('getProductDistributionCtrl (MySQL)');
+  // console.log('getProductDistributionCtrl (MySQL)');
   try {
     const filters = {
       startDate: req.body.startDate || null,
@@ -388,7 +388,7 @@ exports.getProductDistributionCtrl = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Product distribution data error:', error);
+    // console.error('Product distribution data error:', error);
     res.status(500).json({
       success: false,
       message: "Error retrieving product distribution data",
@@ -407,7 +407,7 @@ exports.getProductDistributionCtrl = async (req, res) => {
  *  error: Error message if the data was not retrieved successfully
  *******************************************************************/
 exports.getDrillDownSummaryCtrl = async (req, res) => {
-  console.log('getDrillDownSummaryCtrl (MySQL)');
+  // console.log('getDrillDownSummaryCtrl (MySQL)');
   try {
     const filters = {
       startDate: req.body.startDate || null,
@@ -512,7 +512,7 @@ exports.getDrillDownSummaryCtrl = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Drill-down summary data error:', error);
+    // console.error('Drill-down summary data error:', error);
     res.status(500).json({
       success: false,
       message: "Error retrieving drill-down summary data",

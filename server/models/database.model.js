@@ -121,7 +121,7 @@ const BillingsModel = {
     const query = `SELECT COUNT(*) as count FROM billings ${whereClause}`;
 
     const result = await executeQuery(query, params);
-    console.log('result', result);
+    // console.log('result', result);
     return result[0].count;
   },
   

@@ -295,18 +295,15 @@ const Dashboard: React.FC = () => {
 
       // Send request with axios including filters
       const response = await axios.post(`${baseUrl}/api/dashboard/summaryData`, requestFilters);
-      console.log("response", response.data.data);
 
       if (response.status === 200 && response.data && response.data.data) {
         setDashboardData(response.data.data);
         setError(null);
       } else {
         setError('Invalid response received from server. Please try again later.');
-        console.error('Invalid response status or data:', response.status, response.data);
       }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
-      console.error('Error fetching dashboard data:', err);
     } finally {
       setLoading(false);
       // Delay setting animation ready to ensure smooth transition
@@ -328,7 +325,6 @@ const Dashboard: React.FC = () => {
         product: filters.product || null,
         customer: filters.customer || null
       };
-      console.log("requestFilters", requestFilters);
 
       // Determine API base URL based on environment
       const baseUrl = process.env.NODE_ENV === 'production'
@@ -337,18 +333,15 @@ const Dashboard: React.FC = () => {
 
       // Send request with axios including filters
       const response = await axios.post(`${baseUrl}/api/dashboard/get/mnthly/Trnd/bllVsBkngs`, requestFilters);
-      console.log("response", response.data.data)
 
       if (response.status === 200 && response.data && response.data.data && response.data.data.monthlyTrend) {
         setMonthlyTrndBllVsBkngsData(response.data.data.monthlyTrend);
         setError(null);
       } else {
         setError('Invalid monthly trend data received from server. Please try again later.');
-        console.error('Invalid response status or data for monthly trend:', response.status, response.data);
       }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
-      console.error('Error fetching dashboard data:', err);
     } finally {
       setLoading(false);
       // Delay setting animation ready to ensure smooth transition
@@ -377,18 +370,15 @@ const Dashboard: React.FC = () => {
         : 'http://localhost:4901';
 
       const response = await axios.post(`${baseUrl}/api/dashboard/get/backlogByRegion`, requestFilters);
-      console.log("respofetchRegionwiseBcklogs", response.data.data.backlogByRegion)
 
       if (response.status === 200 && response.data && response.data.data && response.data.data.backlogByRegion) {
         setRegionwiseBcklogs(response.data.data.backlogByRegion);
         setError(null);
       } else {
         setError('Invalid backlog data received from server. Please try again later.');
-        console.error('Invalid response status or data for backlog by region:', response.status, response.data);
       }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
-      console.error('Error fetching dashboard data:', err);
     } finally {
       setLoading(false);
       // Delay setting animation ready to ensure smooth transition
@@ -417,19 +407,15 @@ const Dashboard: React.FC = () => {
         : 'http://localhost:4901';
 
       const response = await axios.post(`${baseUrl}/api/dashboard/get/productDistribution`, requestFilters);
-      console.log("respofetchProductDistribution", response.data.data.productDistribution)
 
       if (response.status === 200 && response.data && response.data.data && response.data.data.productDistribution) {
         setProductDistribution(response.data.data.productDistribution);
-        console.log("setProductDistribution", response.data.data.productDistribution)
         setError(null);
       } else {
         setError('Invalid product distribution data received from server. Please try again later.');
-        console.error('Invalid response status or data for product distribution:', response.status, response.data);
       }
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again later.');
-      console.error('Error fetching dashboard data:', err);
     } finally {
       setLoading(false);
       // Delay setting animation ready to ensure smooth transition
@@ -458,7 +444,6 @@ const Dashboard: React.FC = () => {
         : 'http://localhost:4901';
 
       const response = await axios.post(`${baseUrl}/api/dashboard/get/drillDownSummary`, requestFilters);
-      console.log("fetchDrillDownSummary response", response.data.data.regionStats);
 
       if (response.status === 200 && response.data && response.data.data && response.data.data.regionStats) {
         // Update state with the fetched data
@@ -472,11 +457,9 @@ const Dashboard: React.FC = () => {
         setError(null);
       } else {
         setError('Invalid drill-down summary data received from server. Please try again later.');
-        console.error('Invalid response status or data for drill-down summary:', response.status, response.data);
       }
     } catch (err) {
       setError('Failed to fetch summary data. Please try again later.');
-      console.error('Error fetching summary data:', err);
     } finally {
       setLoading(false);
     }
@@ -501,7 +484,7 @@ const Dashboard: React.FC = () => {
   }
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
-    console.log('Filters applied:', newFilters);
+    // console.log('Filters applied:', newFilters);
     // Here you would typically refetch data with the new filters
     // or filter the existing data client-side
   };
@@ -1897,6 +1880,7 @@ const Dashboard: React.FC = () => {
                         caption="Book-to-Bill Ratio"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span style={{
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',
@@ -1914,6 +1898,7 @@ const Dashboard: React.FC = () => {
                         caption="Book-to-Bill Amount Ratio"
                         dataType="number"
                         alignment="right"
+                        allowFiltering={false}
                         cellRender={(cell) => (
                           <span style={{
                             backgroundColor: cell.value < 0.9 ? '#ffcdd2' : 'transparent',

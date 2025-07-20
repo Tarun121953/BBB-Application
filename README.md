@@ -206,7 +206,236 @@ POST /get/drillDownSummary
 }
 ```
 
-## 🛠️ Installation & Setup
+## � Deployment
+
+### Local Development vs Production
+
+**Local Development:**
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:4901`
+
+**Production (Render):**
+- Frontend: `https://bbb-dashboard.onrender.com`
+- Backend API: `https://bbb-application.onrender.com`
+
+### Render Deployment Guide
+
+#### Prerequisites for Render Deployment
+- GitHub repository with your code
+- Render account (free tier available)
+- MySQL database (can use Render's managed database or external provider)
+
+#### Step 1: Database Setup
+
+**Option A: Render Managed MySQL Database**
+1. Go to Render Dashboard → New → PostgreSQL (or use external MySQL)
+2. Create database instance
+3. Note down connection details
+
+**Option B: External MySQL Provider (Recommended)**
+- Use services like PlanetScale, AWS RDS, or Google Cloud SQL
+- Ensure the database allows external connections
+- Whitelist Render's IP ranges if required
+
+#### Step 2: Backend Deployment on Render
+
+1. **Create Web Service**
+   - Go to Render Dashboard → New → Web Service
+   - Connect your GitHub repository
+   - Configure the service:
+
+2. **Service Configuration**
+   ```yaml
+   # render.yaml (optional - can be configured in UI)
+   services:
+     - type: web
+       name: bbb-backend
+       env: node
+       buildCommand: cd server && npm install
+       startCommand: cd server && npm start
+       envVars:
+         - key: NODE_ENV
+           value: production
+         - key: PORT
+           value: 4901
+         - key: DB_HOST
+           value: your-mysql-host
+         - key: DB_PORT
+           value: 3306
+         - key: DB_USER
+           value: your-mysql-username
+         - key: DB_PASSWORD
+           value: your-mysql-password
+         - key: DB_NAME
+           value: your-database-name
+   ```
+
+3. **Environment Variables Setup**
+   In Render Dashboard, add these environment variables:
+   ```env
+   NODE_ENV=production
+   PORT=4901
+   DB_HOST=your-mysql-host.com
+   DB_PORT=3306
+   DB_USER=your-mysql-username
+   DB_PASSWORD=your-secure-password
+   DB_NAME=your-database-name
+   ```
+
+4. **Build & Start Commands**
+   - **Build Command**: `cd server && npm install`
+   - **Start Command**: `cd server && npm start`
+   - **Root Directory**: Leave empty (or specify if needed)
+
+#### Step 3: Frontend Deployment on Render
+
+1. **Create Static Site**
+   - Go to Render Dashboard → New → Static Site
+   - Connect the same GitHub repository
+   - Configure the service:
+
+2. **Static Site Configuration**
+   - **Build Command**: `cd client && npm install && npm run build`
+   - **Publish Directory**: `client/build`
+   - **Root Directory**: Leave empty
+
+3. **Environment Variables for Frontend**
+   ```env
+   REACT_APP_API_URL=https://your-backend-service.onrender.com
+   NODE_ENV=production
+   ```
+
+4. **Update Frontend API Configuration**
+   In your React app, update the API base URL:
+   ```javascript
+   // client/src/components/Dashboard/Dashboard.tsx
+   const baseUrl = process.env.NODE_ENV === 'production'
+     ? 'https://bbb-application.onrender.com'  // Your Render backend URL
+     : 'http://localhost:4901';
+   ```
+
+#### Step 4: Database Migration on Render
+
+After backend deployment, run the migration:
+
+1. **Access Render Shell** (if available) or use a one-time job:
+   ```bash
+   cd server && node scripts/migrateExcelToMySQL.js
+   ```
+
+2. **Alternative: Local Migration to Production DB**
+   ```bash
+   # Set production database credentials locally
+   export DB_HOST=your-production-host
+   export DB_USER=your-production-user
+   export DB_PASSWORD=your-production-password
+   export DB_NAME=your-production-database
+   
+   # Run migration
+   cd server && node scripts/migrateExcelToMySQL.js
+   ```
+
+#### Step 5: Custom Domain (Optional)
+
+1. In Render Dashboard → Your Service → Settings
+2. Add custom domain
+3. Configure DNS records as instructed by Render
+
+### Production Environment Variables
+
+**Backend (.env for Render)**
+```env
+# Database Configuration
+DB_HOST=your-mysql-host.com
+DB_PORT=3306
+DB_USER=your-mysql-username
+DB_PASSWORD=your-secure-password
+DB_NAME=your-production-database
+
+# Server Configuration
+NODE_ENV=production
+PORT=4901
+
+# Optional: Add any additional production configs
+```
+
+**Frontend Environment Variables**
+```env
+REACT_APP_API_URL=https://your-backend.onrender.com
+NODE_ENV=production
+```
+
+### Render Deployment Best Practices
+
+#### Performance Optimization
+- **Connection Pooling**: Ensure MySQL connection pooling is properly configured
+- **Environment-based Configuration**: Use different configs for development and production
+- **Caching**: Implement appropriate caching strategies for API responses
+- **Database Indexing**: Ensure all frequently queried columns are indexed
+
+#### Security Considerations
+- **Environment Variables**: Never commit sensitive data to repository
+- **CORS Configuration**: Configure CORS properly for production domains
+- **Database Security**: Use strong passwords and limit database access
+- **HTTPS**: Render provides HTTPS by default
+
+#### Monitoring & Maintenance
+- **Health Checks**: Use the `/health` endpoint for monitoring
+- **Logs**: Monitor Render logs for errors and performance issues
+- **Database Monitoring**: Monitor database performance and connection counts
+- **Regular Updates**: Keep dependencies updated for security
+
+### Troubleshooting Render Deployment
+
+#### Common Issues
+
+1. **Build Failures**
+   ```bash
+   # Check build logs in Render dashboard
+   # Ensure all dependencies are in package.json
+   # Verify build commands are correct
+   ```
+
+2. **Database Connection Issues**
+   ```bash
+   # Verify database credentials
+   # Check if database allows external connections
+   # Test connection using the health endpoint
+   ```
+
+3. **CORS Errors**
+   ```javascript
+   // Ensure backend CORS is configured for frontend domain
+   app.use(cors({
+     origin: ['https://your-frontend.onrender.com', 'http://localhost:3000']
+   }));
+   ```
+
+4. **Environment Variable Issues**
+   - Double-check all environment variables in Render dashboard
+   - Ensure no typos in variable names
+   - Verify values are correctly set
+
+#### Deployment Checklist
+
+- [ ] Database is set up and accessible
+- [ ] Backend service is deployed with correct environment variables
+- [ ] Frontend is deployed with correct API URL
+- [ ] Database migration has been run
+- [ ] Health check endpoint returns success
+- [ ] All API endpoints are working
+- [ ] Frontend can communicate with backend
+- [ ] CORS is properly configured
+- [ ] Custom domain is configured (if applicable)
+
+### Database Optimization for Production
+- Ensure proper indexing on frequently queried columns
+- Use connection pooling for better performance
+- Implement query caching for static data
+- Regular database maintenance and optimization
+- Monitor query performance and optimize slow queries
+
+## �🛠️ Installation & Setup
 
 ### Prerequisites
 - Node.js (v16 or higher)

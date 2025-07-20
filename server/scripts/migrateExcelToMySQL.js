@@ -38,7 +38,7 @@ const processSheetData = (sheet, dateColumn) => {
 // Migration function
 const migrateExcelToMySQL = async () => {
   try {
-    console.log('🚀 Starting Excel to MySQL migration...');
+    // console.log('🚀 Starting Excel to MySQL migration...');
     
     // Initialize database and create tables
     await initializeDatabase();
@@ -47,25 +47,25 @@ const migrateExcelToMySQL = async () => {
     const workbook = XLSX.readFile('./data/bbb.xlsx');
     const sheetNames = workbook.SheetNames;
     
-    console.log(`📊 Found ${sheetNames.length} sheets: ${sheetNames.join(', ')}`);
+    // console.log(`📊 Found ${sheetNames.length} sheets: ${sheetNames.join(', ')}`);
     
     // Process each sheet
     const bookingsSheet = processSheetData(XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]), 'Booking_Date');
     const billingsSheet = processSheetData(XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[1]]), 'Billing_Date');
     const backlogSheet = processSheetData(XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[2]]), 'Expected_Shipping_Date');
     
-    console.log(`📈 Bookings records: ${bookingsSheet.length}`);
-    console.log(`💰 Billings records: ${billingsSheet.length}`);
-    console.log(`📋 Backlog records: ${backlogSheet.length}`);
+    // console.log(`📈 Bookings records: ${bookingsSheet.length}`);
+    // console.log(`💰 Billings records: ${billingsSheet.length}`);
+    // console.log(`📋 Backlog records: ${backlogSheet.length}`);
     
     // Clear existing data
-    console.log('🗑️  Clearing existing data...');
+    // console.log('🗑️  Clearing existing data...');
     await executeQuery('DELETE FROM bookings');
     await executeQuery('DELETE FROM billings');
     await executeQuery('DELETE FROM backlog');
     
     // Migrate bookings data
-    console.log('📈 Migrating bookings data...');
+    // console.log('📈 Migrating bookings data...');
     for (const booking of bookingsSheet) {
       if (booking.Booking_Date && booking.Region && booking.Product && booking.Customer) {
         await executeQuery(
@@ -82,7 +82,7 @@ const migrateExcelToMySQL = async () => {
     }
     
     // Migrate billings data
-    console.log('💰 Migrating billings data...');
+    // console.log('💰 Migrating billings data...');
     for (const billing of billingsSheet) {
       if (billing.Billing_Date && billing.Region && billing.Product && billing.Customer) {
         await executeQuery(
@@ -99,7 +99,7 @@ const migrateExcelToMySQL = async () => {
     }
     
     // Migrate backlog data
-    console.log('📋 Migrating backlog data...');
+    // console.log('📋 Migrating backlog data...');
     for (const backlog of backlogSheet) {
       if (backlog.Expected_Shipping_Date && backlog.Region && backlog.Product && backlog.Customer) {
         await executeQuery(
@@ -120,16 +120,16 @@ const migrateExcelToMySQL = async () => {
     const billingsCount = await executeQuery('SELECT COUNT(*) as count FROM billings');
     const backlogCount = await executeQuery('SELECT COUNT(*) as count FROM backlog');
     
-    console.log('✅ Migration completed successfully!');
-    console.log(`📊 Final counts:`);
-    console.log(`   - Bookings: ${bookingsCount[0].count}`);
-    console.log(`   - Billings: ${billingsCount[0].count}`);
-    console.log(`   - Backlog: ${backlogCount[0].count}`);
+    // console.log('✅ Migration completed successfully!');
+    // console.log(`📊 Final counts:`);
+    // console.log(`   - Bookings: ${bookingsCount[0].count}`);
+    // console.log(`   - Billings: ${billingsCount[0].count}`);
+    // console.log(`   - Backlog: ${backlogCount[0].count}`);
     
     process.exit(0);
     
   } catch (error) {
-    console.error('❌ Migration failed:', error.message);
+    // console.error('❌ Migration failed:', error.message);
     process.exit(1);
   }
 };
